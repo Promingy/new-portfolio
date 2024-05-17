@@ -13,15 +13,27 @@ const renderer = new Three.WebGLRenderer({
 
 const loader = new GLTFLoader();
 
-loader.load('models/tavern.glb', function(tavern) {
-  tavern.scene.scale.set(50, 50, 50);
-  scene.add(tavern.scene);
-}, undefined, function(error){
-  console.error(error);
-})
+// loader.load('models/tavern.glb', function(tavern) {
+//   tavern.scene.scale.set(50, 50, 50);
+//   scene.add(tavern.scene);
+// }, undefined, function(error){
+//   console.error(error);
+// })
 
-loader.load('models/medieval_book.glb', function(book) {
-  book.scene.scale.set(0.1, 0.1, 0.1);
+// loader.load('models/medieval_book.glb', function(book) {
+//   book.scene.scale.set(0.1, 0.1, 0.1);
+//   scene.add(book.scene);
+// }, undefined, function(error){
+//   console.error(error);
+// })
+// loader.load('models/old_bookshelf.glb', function(book) {
+//   book.scene.scale.set(0.1, 0.1, 0.1);
+//   scene.add(book.scene);
+// }, undefined, function(error){
+//   console.error(error);
+// })
+loader.load('models/alchemists_manual.glb', function(book) {
+  book.scene.scale.set(100, 100, 100);
   scene.add(book.scene);
 }, undefined, function(error){
   console.error(error);
