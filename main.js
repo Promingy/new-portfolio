@@ -13,25 +13,25 @@ const renderer = new Three.WebGLRenderer({
 
 const loader = new GLTFLoader();
 
-// loader.load('models/tavern.glb', function(tavern) {
-//   tavern.scene.scale.set(50, 50, 50);
-//   scene.add(tavern.scene);
-// }, undefined, function(error){
-//   console.error(error);
-// })
+loader.load('models/tavern.glb', function(tavern) {
+  tavern.scene.scale.set(50, 50, 50);
+  scene.add(tavern.scene);
+}, undefined, function(error){
+  console.error(error);
+})
 
-// loader.load('models/medieval_book.glb', function(book) {
-//   book.scene.scale.set(0.1, 0.1, 0.1);
-//   scene.add(book.scene);
-// }, undefined, function(error){
-//   console.error(error);
-// })
-// loader.load('models/old_bookshelf.glb', function(book) {
-//   book.scene.scale.set(0.1, 0.1, 0.1);
-//   scene.add(book.scene);
-// }, undefined, function(error){
-//   console.error(error);
-// })
+loader.load('models/medieval_book.glb', function(book) {
+  book.scene.scale.set(0.1, 0.1, 0.1);
+  scene.add(book.scene);
+}, undefined, function(error){
+  console.error(error);
+})
+loader.load('models/old_bookshelf.glb', function(book) {
+  book.scene.scale.set(0.1, 0.1, 0.1);
+  scene.add(book.scene);
+}, undefined, function(error){
+  console.error(error);
+})
 loader.load('models/alchemists_manual.glb', function(book) {
   book.scene.scale.set(100, 100, 100);
   scene.add(book.scene);
@@ -47,9 +47,22 @@ camera.position.setY(10);
 renderer.render(scene, camera);
 
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.maxDistance = 10;
+controls.minDistance = 5;
+controls.enablePan = false;
+controls.maxPolarAngle = Math.PI / 2;
 
-const ambientLight = new Three.AmbientLight(0xffffff);
-scene.add(ambientLight);
+// const ambientLight = new Three.AmbientLight(0xffffff);
+// scene.add(ambientLight);
+
+const pointLight = new Three.PointLight(0xee9911);
+pointLight.position.set(0, 5, 0);
+pointLight.intensity = 15;
+
+const sphereSize = 1
+const pointLightHelper = new Three.PointLightHelper(pointLight, sphereSize);
+
+scene.add(pointLight, pointLightHelper)
 
 function animate() {
   requestAnimationFrame(animate);
