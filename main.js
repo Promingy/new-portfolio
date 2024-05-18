@@ -1,10 +1,9 @@
 import * as Three from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { FBXLoader } from 'three/examples/jsm/Addons.js';
-
 import './style.css'
 
+let fire, mixer;
 
 const scene = new Three.Scene();
 
@@ -16,18 +15,18 @@ const renderer = new Three.WebGLRenderer({
 
 const loader = new GLTFLoader();
 
-// loader.load('models/newTav.glb', function(tavern) {
-//   // tavern.scene.scale.set(100, 100, 100);
-//   tavern.scene.scale.set(25,25,25)
-//   tavern.scene.position.set(0, 0, 0)
-//   // set tavern material to frontSide
-//   tavern.scene.traverse((child) => {
-//     if (child.isMesh) {
-//       child.material.side = Three.FrontSide;
-//     }
-//   });
-//   scene.add(tavern.scene);
-// })
+loader.load('models/newTav.glb', function(tavern) {
+  // tavern.scene.scale.set(100, 100, 100);
+  tavern.scene.scale.set(25,25,25)
+  tavern.scene.position.set(0, 0, 0)
+  // set tavern material to frontSide
+  tavern.scene.traverse((child) => {
+    if (child.isMesh) {
+      child.material.side = Three.FrontSide;
+    }
+  });
+  scene.add(tavern.scene);
+})
 
 // loader.load('models/medieval_book.glb', function(book) {
 //   book.scene.scale.set(0.1, 0.1, 0.1);
@@ -45,24 +44,19 @@ const loader = new GLTFLoader();
 //   scene.add(manual.scene);
 // })
 
-function _LoadAnimatedModel() {
-  const loader = new FBXLoader();
-  loader.setPath('models/animated-fire/source/fire');
-  loader.load('fire.fbx', function(fire) {
-    fire.scale.set(25, 25, 25);
-    fire.traverse(c => {
-      c.castShadow = true;
-    });
+loader.load('models/animated_fire.glb', (gltf) => {
+  gltf.scene.scale.set(25, 25, 25);
+  fire = gltf.scene
+  mixer = new Three.AnimationMixer(fire);
+  mixer.clipAction(Three.AnimationUtils.subclip(gltf.animations[0], 'idle', 0, 221)).setDuration(6).play();
+  mixer.clipAction(Three.AnimationUtils.subclip(gltf.animations[0], 'run', 222, 244)).setDuration(0.7).play();
+  mixer._actions[0].enabled = true;
+  mixer._actions[1].enabled = false;
 
-    const anim = new FBXLoader();
-    anim.setPath('models/animated-fire/source/fire');
-    anim.load('fire.fbx', function(anim) {
-      const mixer = new Three.AnimationMixer(fire);
-      const action = mixer.clipAction(anim.animations[0]);
-      action.play();
-      scene.add(fire);
-    });
-}
+  fire.position.set(-33.3, 0, -70);
+   scene.add(fire);
+})
+
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -126,6 +120,8 @@ scene.background = new Three.Color(0xE1C699);
 function animate() {
   requestAnimationFrame(animate);
 
+  if (mixer) mixer.update(.05);
+  
   controls.update();
 
   renderer.render(scene, camera);
