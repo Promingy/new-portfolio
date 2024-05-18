@@ -57,7 +57,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 // controls.maxPolarAngle = Math.PI / 2;
 // controls.minPolarAngle = Math.PI / 5;
 
-// const ambientLight = new Three.AmbientLight(0xffffff);
+// const ambientLight = new Three.AmbientLight(0xffffff, .5);
 // scene.add(ambientLight);
 
 const pointLight = new Three.PointLight("orange");
@@ -73,14 +73,13 @@ pointLight2.intensity = 1000;
 pointLight3.position.set(-25, 50, -60);
 pointLight3.intensity = 1000;
 
-// rectarea light
-const  rectLight = new Three.RectAreaLight( "orange", 1000, 10, 10);
-const rectLightHelper = new Three.RectAreaLightHelper(rectLight);
+const  rectLight = new Three.RectAreaLight( "orange", 1000, 20, 15);
+rectLight.position.set(-33.5, 10, -73);
+rectLight.rotateX(3.15);
+rectLight.power = 100000;
+const rectLightHelper = new RectAreaLightHelper(rectLight);
 
-// const sphereSize = 1
-// const pointLightHelper = new Three.PointLightHelper(pointLight3, sphereSize);
-// 
-scene.add(pointLight, pointLight2, pointLight3, rectLight, rectLightHelper);
+scene.add(pointLight, pointLight2, pointLight3, rectLight);
 
 function animate() {
   requestAnimationFrame(animate);
