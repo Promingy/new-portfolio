@@ -57,14 +57,14 @@ camera.position.setX(-100);
 renderer.render(scene, camera);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-// controls.maxDistance = 10;
-// controls.minDistance = 5;
-// controls.enablePan = false;
+controls.maxDistance = 300;
+controls.minDistance = 150;
+controls.enablePan = false;
 controls.maxPolarAngle = Math.PI / 2.2;
-// controls.minPolarAngle = Math.PI / 5;
+controls.minPolarAngle = Math.PI / 5;
 
-// const ambientLight = new Three.AmbientLight(0xffffff, .5);
-// scene.add(ambientLight);
+controls.maxAzimuthAngle = Math.PI / 10;
+controls.minAzimuthAngle = -Math.PI / 1.65;
 
 const pointLight = new Three.PointLight("orange");
 const pointLight2 = pointLight.clone();
