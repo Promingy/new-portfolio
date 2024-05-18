@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import './style.css'
 
+
 const scene = new Three.Scene();
 
 const camera = new Three.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -26,15 +27,17 @@ loader.load('models/medieval_book.glb', function(book) {
 }, undefined, function(error){
   console.error(error);
 })
-loader.load('models/old_bookshelf.glb', function(book) {
-  book.scene.scale.set(0.1, 0.1, 0.1);
-  scene.add(book.scene);
+loader.load('models/old_bookshelf.glb', function(bookshelf) {
+  bookshelf.scene.scale.set(3.4, 3, 3.4);
+  bookshelf.scene.position.set(2, 2.6, -10.9)
+  bookshelf.scene.rotation.set(0, -0.015, 0)
+  scene.add(bookshelf.scene);
 }, undefined, function(error){
   console.error(error);
 })
-loader.load('models/alchemists_manual.glb', function(book) {
-  book.scene.scale.set(100, 100, 100);
-  scene.add(book.scene);
+loader.load('models/alchemists_manual.glb', function(manual) {
+  manual.scene.scale.set(100, 100, 100);
+  scene.add(manual.scene);
 }, undefined, function(error){
   console.error(error);
 })
@@ -48,12 +51,12 @@ renderer.render(scene, camera);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.maxDistance = 10;
-controls.minDistance = 5;
-controls.enablePan = false;
+// controls.minDistance = 5;
+// controls.enablePan = false;
 controls.maxPolarAngle = Math.PI / 2;
 
-// const ambientLight = new Three.AmbientLight(0xffffff);
-// scene.add(ambientLight);
+const ambientLight = new Three.AmbientLight(0xffffff);
+scene.add(ambientLight);
 
 const pointLight = new Three.PointLight(0xee9911);
 pointLight.position.set(0, 5, 0);
