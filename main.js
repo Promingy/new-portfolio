@@ -1,6 +1,8 @@
 import * as Three from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
+
 import './style.css'
 
 
@@ -40,8 +42,11 @@ loader.load('models/newTav.glb', function(tavern) {
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.setZ(300);
-camera.position.setY(100);
+camera.lookAt(0, 0, 0);
+camera.position.setZ(100);
+camera.position.setY(50);
+camera.position.setX(-100);
+
 
 renderer.render(scene, camera);
 
@@ -52,16 +57,30 @@ const controls = new OrbitControls(camera, renderer.domElement);
 // controls.maxPolarAngle = Math.PI / 2;
 // controls.minPolarAngle = Math.PI / 5;
 
-const ambientLight = new Three.AmbientLight(0xffffff);
-scene.add(ambientLight);
+// const ambientLight = new Three.AmbientLight(0xffffff);
+// scene.add(ambientLight);
 
 const pointLight = new Three.PointLight("orange");
-pointLight.intensity = 5000;
+const pointLight2 = pointLight.clone();
+const pointLight3 = pointLight.clone();
 
-const sphereSize = 10
-const pointLightHelper = new Three.PointLightHelper(pointLight, sphereSize);
+pointLight.position.set(44, 50, 80);
+pointLight.intensity = 1000;
+
+pointLight2.position.set(44, 50, -30);
+pointLight2.intensity = 1000;
+
+pointLight3.position.set(-25, 50, -60);
+pointLight3.intensity = 1000;
+
+// rectarea light
+const  rectLight = new Three.RectAreaLight( "orange", 1000, 10, 10);
+const rectLightHelper = new Three.RectAreaLightHelper(rectLight);
+
+// const sphereSize = 1
+// const pointLightHelper = new Three.PointLightHelper(pointLight3, sphereSize);
 // 
-scene.add(pointLight, pointLightHelper)
+scene.add(pointLight, pointLight2, pointLight3, rectLight, rectLightHelper);
 
 function animate() {
   requestAnimationFrame(animate);
