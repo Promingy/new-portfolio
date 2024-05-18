@@ -45,16 +45,14 @@ loader.load('models/newTav.glb', function(tavern) {
 // })
 
 loader.load('models/animated_fire.glb', (gltf) => {
-  gltf.scene.scale.set(25, 25, 25);
   fire = gltf.scene
   mixer = new Three.AnimationMixer(fire);
-  mixer.clipAction(Three.AnimationUtils.subclip(gltf.animations[0], 'idle', 0, 221)).setDuration(6).play();
-  mixer.clipAction(Three.AnimationUtils.subclip(gltf.animations[0], 'run', 222, 244)).setDuration(0.7).play();
-  mixer._actions[0].enabled = true;
-  mixer._actions[1].enabled = false;
-
-  fire.position.set(-33.3, 0, -70);
-   scene.add(fire);
+  
+  mixer.clipAction(gltf.animations[0]).setDuration(3).play();
+  
+  fire.scale.set(25, 25, 25);
+  fire.position.set(-33.3, 2, -70);
+  scene.add(fire);
 })
 
 
@@ -103,16 +101,16 @@ rectLight.rotateX(3.14);
 
 scene.add(pointLight, pointLight2, pointLight3, rectLight);
 
-// new directional light
-const directionalLight = new Three.DirectionalLight("orange", .01);
-directionalLight.position.set(0, 0, -200);
-// directionalLight.position.set(-1000, 200, 1000);
+// // new directional light
+// const directionalLight = new Three.DirectionalLight("orange", .01);
+// directionalLight.position.set(0, 0, -200);
+// // directionalLight.position.set(-1000, 200, 1000);
 
-// directionalLightHelper
-const directionalLightHelper = new Three.DirectionalLightHelper(directionalLight, 5);
-scene.add(directionalLightHelper);
+// // directionalLightHelper
+// const directionalLightHelper = new Three.DirectionalLightHelper(directionalLight, 5);
+// scene.add(directionalLightHelper);
 
-scene.add(directionalLight);
+// scene.add(directionalLight);
 
 scene.background = new Three.Color(0xE1C699);
 
@@ -120,7 +118,7 @@ scene.background = new Three.Color(0xE1C699);
 function animate() {
   requestAnimationFrame(animate);
 
-  if (mixer) mixer.update(.05);
+  if (mixer) mixer.update(1/60);
   
   controls.update();
 
