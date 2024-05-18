@@ -20,6 +20,12 @@ loader.load('models/newTav.glb', function(tavern) {
   // tavern.scene.scale.set(100, 100, 100);
   tavern.scene.scale.set(25,25,25)
   tavern.scene.position.set(0, 0, 0)
+  // set tavern material to frontSide
+  tavern.scene.traverse((child) => {
+    if (child.isMesh) {
+      child.material.side = Three.FrontSide;
+    }
+  });
   scene.add(tavern.scene);
 })
 
@@ -54,7 +60,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 // controls.maxDistance = 10;
 // controls.minDistance = 5;
 // controls.enablePan = false;
-// controls.maxPolarAngle = Math.PI / 2;
+controls.maxPolarAngle = Math.PI / 2.2;
 // controls.minPolarAngle = Math.PI / 5;
 
 // const ambientLight = new Three.AmbientLight(0xffffff, .5);
@@ -73,13 +79,33 @@ pointLight2.intensity = 1000;
 pointLight3.position.set(-25, 50, -60);
 pointLight3.intensity = 1000;
 
+const pointLight4 = pointLight.clone();
+pointLight4.position.set(80, 50, 70);
+
+const pointLight5 = pointLight4.clone();
+pointLight5.position.set(80, 50, -20)
+
 const  rectLight = new Three.RectAreaLight( "orange", 1000, 20, 15);
 rectLight.position.set(-33.5, 10, -73);
 rectLight.rotateX(3.15);
 rectLight.power = 100000;
-const rectLightHelper = new RectAreaLightHelper(rectLight);
 
-scene.add(pointLight, pointLight2, pointLight3, rectLight);
+const pointLightHelper = new Three.PointLightHelper(pointLight5, 1);
+
+scene.add(pointLight, pointLight2, pointLight3, rectLight, pointLight4, pointLight5, pointLightHelper);
+
+// // new directional light
+// const directionalLight = new Three.DirectionalLight(0xffffff, 0.25);
+// directionalLight.position.set(0, 0, -200);
+
+// //directionalLightHelper
+// const directionalLightHelper = new Three.DirectionalLightHelper(directionalLight, 5);
+// scene.add(directionalLightHelper);
+
+// scene.add(directionalLight);
+
+scene.background = new Three.Color(0xE1C699);
+
 
 function animate() {
   requestAnimationFrame(animate);
