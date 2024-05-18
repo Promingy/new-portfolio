@@ -1,7 +1,7 @@
 import * as Three from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
+import { FBXLoader } from 'three/examples/jsm/Addons.js';
 
 import './style.css'
 
@@ -16,18 +16,18 @@ const renderer = new Three.WebGLRenderer({
 
 const loader = new GLTFLoader();
 
-loader.load('models/newTav.glb', function(tavern) {
-  // tavern.scene.scale.set(100, 100, 100);
-  tavern.scene.scale.set(25,25,25)
-  tavern.scene.position.set(0, 0, 0)
-  // set tavern material to frontSide
-  tavern.scene.traverse((child) => {
-    if (child.isMesh) {
-      child.material.side = Three.FrontSide;
-    }
-  });
-  scene.add(tavern.scene);
-})
+// loader.load('models/newTav.glb', function(tavern) {
+//   // tavern.scene.scale.set(100, 100, 100);
+//   tavern.scene.scale.set(25,25,25)
+//   tavern.scene.position.set(0, 0, 0)
+//   // set tavern material to frontSide
+//   tavern.scene.traverse((child) => {
+//     if (child.isMesh) {
+//       child.material.side = Three.FrontSide;
+//     }
+//   });
+//   scene.add(tavern.scene);
+// })
 
 // loader.load('models/medieval_book.glb', function(book) {
 //   book.scene.scale.set(0.1, 0.1, 0.1);
@@ -45,6 +45,24 @@ loader.load('models/newTav.glb', function(tavern) {
 //   scene.add(manual.scene);
 // })
 
+function _LoadAnimatedModel() {
+  const loader = new FBXLoader();
+  loader.setPath('models/animated-fire/source/fire');
+  loader.load('fire.fbx', function(fire) {
+    fire.scale.set(25, 25, 25);
+    fire.traverse(c => {
+      c.castShadow = true;
+    });
+
+    const anim = new FBXLoader();
+    anim.setPath('models/animated-fire/source/fire');
+    anim.load('fire.fbx', function(anim) {
+      const mixer = new Three.AnimationMixer(fire);
+      const action = mixer.clipAction(anim.animations[0]);
+      action.play();
+      scene.add(fire);
+    });
+}
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
