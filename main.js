@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import './style.css'
 
-let fire, mixer;
+let fire, torchFlame, torchFlame2, torchFlame3, firePlaceMixer, torchMixer, torchMixer2, torchMixer3;
 
 const scene = new Three.Scene();
 
@@ -47,13 +47,26 @@ loader.load('models/newTav.glb', function(tavern) {
 
 loader.load('models/animated_fire.glb', (gltf) => {
   fire = gltf.scene
-  mixer = new Three.AnimationMixer(fire);
+  firePlaceMixer = new Three.AnimationMixer(fire);
   
-  mixer.clipAction(gltf.animations[0]).setDuration(2).play();
-  
+  firePlaceMixer.clipAction(gltf.animations[0]).setDuration(2).play();
+  console.log('fire', gltf.animations)
   fire.scale.set(25, 25, 25);
   fire.position.set(-33.3, 2, -70);
   scene.add(fire);
+})
+
+loader.load('models/animated_torch_flame1.glb', (gltf) => {
+  torchFlame = gltf.scene;
+  torchMixer = new Three.AnimationMixer(torchFlame);
+
+  torchMixer.clipAction(gltf.animations[0]).setDuration(1).play();
+  console.log('torchFlame', gltf)
+
+  torchFlame.position.set(49, 53, 79);
+  // size if using torchFlame1
+  torchFlame.scale.set(4.5, 1.5, 4.5);
+  scene.add(torchFlame);
 })
 
 
@@ -103,16 +116,15 @@ var hemiLight = new Three.HemisphereLight( 0xffffff, 0x444444, .5);
 hemiLight.position.set( 0, 300, 0 );
 
 
-// const directionalLight = new Three.DirectionalLight("orange", .5);
-// const directionLight2 = directionalLight.clone();
-// // directionalLight.position.set(0, 0, -200);
-// directionalLight.position.set(-1000, 500, 1000);
+const directionalLight = new Three.DirectionalLight("orange", .5);
+const directionLight2 = directionalLight.clone();
+// directionalLight.position.set(0, 0, -200);
+directionalLight.position.set(-1000, 500, 1000);
 // directionLight2.position.set(1000, 250, -1000);
 
-// const directionalLightHelper = new Three.DirectionalLightHelper(directionLight2, 5);
-// scene.add(directionalLightHelper);
+const directionalLightHelper = new Three.DirectionalLightHelper(directionLight2, 5);
 
-// scene.add(directionalLight, directionLight2);
+scene.add(directionalLight, directionLight2);
 scene.add(pointLight, pointLight2, pointLight3, rectLight, hemiLight);
 
 scene.background = new Three.Color(0xE1C699);
@@ -121,7 +133,10 @@ scene.background = new Three.Color(0xE1C699);
 function animate() {
   requestAnimationFrame(animate);
 
-  if (mixer) mixer.update(1/60);
+  if (firePlaceMixer) firePlaceMixer.update(1/60);
+  torchMixer && torchMixer.update(1/60);
+  if (torchMixer2) torchMixer2.update(1/60);
+  if (torchMixer3) torchMixer3.update(1/60);
   
   controls.update();
 
