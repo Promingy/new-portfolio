@@ -45,28 +45,40 @@ loader.load('models/newTav.glb', function(tavern) {
 //   scene.add(manual.scene);
 // })
 
-loader.load('models/animated_fire.glb', (gltf) => {
+loader.load('models/animated_torch_flame1.glb', (gltf) => {
   fire = gltf.scene
   firePlaceMixer = new Three.AnimationMixer(fire);
   
-  firePlaceMixer.clipAction(gltf.animations[0]).setDuration(2).play();
-  console.log('fire', gltf.animations)
-  fire.scale.set(25, 25, 25);
-  fire.position.set(-33.3, 2, -70);
+  firePlaceMixer.clipAction(gltf.animations[0]).setDuration(3).play();
+
+  fire.scale.set(13, 5, 10);
+  fire.position.set(-34, 7, -70);
   scene.add(fire);
 })
 
 loader.load('models/animated_torch_flame1.glb', (gltf) => {
   torchFlame = gltf.scene;
+  torchFlame2 = gltf.scene.clone();
+  torchFlame3 = gltf.scene.clone();
+
   torchMixer = new Three.AnimationMixer(torchFlame);
+  torchMixer2 = new Three.AnimationMixer(torchFlame2);
+  torchMixer3 = new Three.AnimationMixer(torchFlame3);
 
   torchMixer.clipAction(gltf.animations[0]).setDuration(1).play();
-  console.log('torchFlame', gltf)
+  torchMixer2.clipAction(gltf.animations[0]).setDuration(1).play();
+  torchMixer3.clipAction(gltf.animations[0]).setDuration(1).play();
+
 
   torchFlame.position.set(49, 53, 79);
+  torchFlame2.position.set(49, 53, -30);
+  torchFlame3.position.set(-26, 53, -66);
+  
   // size if using torchFlame1
   torchFlame.scale.set(4.5, 1.5, 4.5);
-  scene.add(torchFlame);
+  torchFlame2.scale.set(4.5, 1.5, 4.5);
+  torchFlame3.scale.set(4.5, 1.5, 4.5);
+  scene.add(torchFlame, torchFlame2, torchFlame3);
 })
 
 
