@@ -23,6 +23,7 @@ loader.load('models/newTav.glb', function(tavern) {
   tavern.scene.traverse((child) => {
     if (child.isMesh) {
       child.material.side = Three.FrontSide;
+      child.material.metalness = 0
     }
   });
   scene.add(tavern.scene);
@@ -48,7 +49,7 @@ loader.load('models/animated_fire.glb', (gltf) => {
   fire = gltf.scene
   mixer = new Three.AnimationMixer(fire);
   
-  mixer.clipAction(gltf.animations[0]).setDuration(3).play();
+  mixer.clipAction(gltf.animations[0]).setDuration(2).play();
   
   fire.scale.set(25, 25, 25);
   fire.position.set(-33.3, 2, -70);
@@ -72,9 +73,8 @@ controls.minDistance = 150;
 controls.enablePan = false;
 controls.maxPolarAngle = Math.PI / 2.2;
 controls.minPolarAngle = Math.PI / 5;
-
-controls.maxAzimuthAngle = Math.PI / 10;
-controls.minAzimuthAngle = -Math.PI / 1.65;
+// controls.maxAzimuthAngle = Math.PI / 10;
+// controls.minAzimuthAngle = -Math.PI / 1.65;
 
 const pointLight = new Three.PointLight(0xF07F13);
 const pointLight2 = pointLight.clone();
@@ -99,18 +99,21 @@ const  rectLight = new Three.RectAreaLight( "orange", 100, 20, 15);
 rectLight.position.set(-33.5, 10, -73);
 rectLight.rotateX(3.14);
 
-scene.add(pointLight, pointLight2, pointLight3, rectLight);
+var hemiLight = new Three.HemisphereLight( 0xffffff, 0x444444, .5);
+hemiLight.position.set( 0, 300, 0 );
 
-// // new directional light
-// const directionalLight = new Three.DirectionalLight("orange", .01);
-// directionalLight.position.set(0, 0, -200);
-// // directionalLight.position.set(-1000, 200, 1000);
 
-// // directionalLightHelper
-// const directionalLightHelper = new Three.DirectionalLightHelper(directionalLight, 5);
+// const directionalLight = new Three.DirectionalLight("orange", .5);
+// const directionLight2 = directionalLight.clone();
+// // directionalLight.position.set(0, 0, -200);
+// directionalLight.position.set(-1000, 500, 1000);
+// directionLight2.position.set(1000, 250, -1000);
+
+// const directionalLightHelper = new Three.DirectionalLightHelper(directionLight2, 5);
 // scene.add(directionalLightHelper);
 
-// scene.add(directionalLight);
+// scene.add(directionalLight, directionLight2);
+scene.add(pointLight, pointLight2, pointLight3, rectLight, hemiLight);
 
 scene.background = new Three.Color(0xE1C699);
 
