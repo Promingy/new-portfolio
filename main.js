@@ -15,7 +15,7 @@ const renderer = new Three.WebGLRenderer({
 
 const loader = new GLTFLoader();
 
-loader.load('models/tavern.glb', function(tavern) {
+loader.load('models/newTav.glb', function(tavern) {
   // tavern.scene.scale.set(100, 100, 100);
   tavern.scene.scale.set(25,25,25)
   tavern.scene.position.set(0, 0, 0)
