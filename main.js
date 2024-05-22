@@ -13,10 +13,10 @@ const renderer = new Three.WebGLRenderer({
   canvas: document.querySelector('#bg'),
 });
 
-const loader = new GLTFLoader();
+const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
 
-loader.load('models/newTav.glb', function(tavern) {
-  // tavern.scene.scale.set(100, 100, 100);
+loader.load('tavern.glb', function(tavern) {
+  // tavern.scene.scale.set(100, 100, 100);'
   tavern.scene.scale.set(25,25,25)
   tavern.scene.position.set(0, 0, 0)
   // set tavern material to frontSide
@@ -29,30 +29,35 @@ loader.load('models/newTav.glb', function(tavern) {
   scene.add(tavern.scene);
 })
 
-loader.load('models/floating_island.glb', function(island) {
+
+loader.load('floating_island.glb', function(island) {
 
   island.scene.position.set(-15, 2, 10)
   island.scene.scale.set(20, 20, 20);
   scene.add(island.scene);
 })
 
-// loader.load('models/medieval_book.glb', function(book) {
-//   book.scene.scale.set(0.1, 0.1, 0.1);
+// loader.load('medieval_book.glb', function(book) {
+//   book.scene.scale.set(1, 1, 1);
 //   book.scene.position.setY(10)
 //   scene.add(book.scene);
 // })
-// loader.load('models/old_bookshelf.glb', function(bookshelf) {
+// loader.load('old_bookshelf.glb', function(bookshelf) {
 //   bookshelf.scene.scale.set(3.4, 3, 3.4);
 //   bookshelf.scene.position.set(2, 2.6, -10.9)
 //   bookshelf.scene.rotation.set(0, -0.015, 0)
 //   scene.add(bookshelf.scene);
 // })
-// loader.load('models/alchemists_manual.glb', function(manual) {
-//   manual.scene.scale.set(100, 100, 100);
+// loader.load('alchemists_manual.glb', function(manual) {
+//   manual.scene.scale.set(1000, 1000, 1000);
 //   scene.add(manual.scene);
 // })
+// loader.load('medieval_notice_board.glb', (noticeBoard) => {
+//   noticeBoard.scene.scale.set(10, 10, 10)
+//   scene.add(noticeBoard.scene);
+// })
 
-loader.load('models/animated_torch_flame1.glb', (gltf) => {
+loader.load('animated_torch_flame1.glb', (gltf) => {
   fire = gltf.scene
   firePlaceMixer = new Three.AnimationMixer(fire);
   
@@ -63,7 +68,7 @@ loader.load('models/animated_torch_flame1.glb', (gltf) => {
   scene.add(fire);
 })
 
-loader.load('models/animated_torch_flame1.glb', (gltf) => {
+loader.load('animated_torch_flame1.glb', (gltf) => {
   torchFlame = gltf.scene;
   torchFlame2 = gltf.scene.clone();
   torchFlame3 = gltf.scene.clone();
