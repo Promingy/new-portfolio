@@ -18,7 +18,6 @@ renderer.domElement.addEventListener('click', onDocumentMouseDown)
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-camera.lookAt(0, 0, 0);
 camera.position.setZ(100);
 camera.position.setY(50);
 camera.position.setX(-100);
@@ -54,7 +53,8 @@ controls.minPolarAngle = Math.PI / 5;
         child.material.metalness = 0
       }
     });
-
+    tavern.scene.receiveShadow = true;
+    tavern.scene.castShadow = true;
     scene.add(tavern.scene);
   })
   
@@ -94,6 +94,7 @@ controls.minPolarAngle = Math.PI / 5;
   
     fire.scale.set(13, 5, 10);
     fire.position.set(-34, 7, -70);
+    gltf.scene.castShadow = true
     scene.add(fire);
   })
   
@@ -197,7 +198,7 @@ function onDocumentMouseDown(e) {
   const intersects = raycaster.intersectObjects(scene.children, true);
 
   if (intersects.length > 0) {
-    console.log(intersects[0].object);
-    camera.lookAt(intersects[0].object.position);
-  }
+    // camera.position.set(10, 10, 10)
+    }
+
 }
