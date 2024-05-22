@@ -1,9 +1,12 @@
 import * as Three from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import CameraControls from 'camera-controls';
 import './style.css'
 
-let fire, torchFlame, torchFlame2, torchFlame3, firePlaceMixer, torchMixer, torchMixer2, torchMixer3;
+CameraControls.install ({THREE: Three})
+
+let fire, torchFlame, torchFlame2, torchFlame3, firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
 
 const scene = new Three.Scene();
 const camera = new Three.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -25,12 +28,17 @@ camera.position.setX(-100);
 
 renderer.render(scene, camera);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.maxDistance = 700;
-controls.minDistance = 150;
-controls.enablePan = false;
-controls.maxPolarAngle = Math.PI / 2.2;
-controls.minPolarAngle = Math.PI / 5;
+const clock = new Three.Clock();
+const cameraControls = new CameraControls(camera, renderer.domElement);
+cameraControls.dollyInFixed(50, true);
+
+/// Orbit Controls
+// const controls = new OrbitControls(camera, renderer.domElement);
+// controls.maxDistance = 700;
+// controls.minDistance = 150;
+// controls.enablePan = false;
+// controls.maxPolarAngle = Math.PI / 2.2;
+// controls.minPolarAngle = Math.PI / 5;
 // controls.maxAzimuthAngle = Math.PI / 10;
 // controls.minAzimuthAngle = -Math.PI / 1.65;
 
@@ -123,11 +131,12 @@ controls.minPolarAngle = Math.PI / 5;
     scene.add(torchFlame, torchFlame2, torchFlame3);
   })
 
-
-
-
-
-
+  loader.load('medieval_notice_board.glb', (gltf) => {
+    noticeBoard = gltf.scene;
+    noticeBoard.scale.set(10, 10, 10)
+    noticeBoard.position.set(-100, 0, 0)
+    scene.add(noticeBoard);
+  })
 
 
 const pointLight = new Three.PointLight(0xF07F13);
@@ -165,9 +174,11 @@ scene.add(pointLight, pointLight2, pointLight3, rectLight, hemiLight);
 scene.background = new Three.Color(0xE1C699);
 
 
-/// helper function - Raycasting
+
 
 function animate() {
+  const delta = clock.getDelta();
+  const hasControlsUpdated = cameraControls.update(delta);
   requestAnimationFrame(animate);
   
   if (firePlaceMixer) firePlaceMixer.update(1/60);
@@ -175,15 +186,14 @@ function animate() {
   if (torchMixer2) torchMixer2.update(1/60);
   if (torchMixer3) torchMixer3.update(1/60);
   
-  controls.update();
+  // controls.update();
   
-  renderer.render(scene, camera);
-  
+  if (hasControlsUpdated) {
+    renderer.render(scene, camera);
+  }  
 };
 
 animate();
-
-
 
 
 
@@ -195,10 +205,10 @@ function onDocumentMouseDown(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  const intersects = raycaster.intersectObjects(scene.children, true);
+  const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
 
-  if (intersects.length > 0) {
-    // camera.position.set(10, 10, 10)
-    }
-
+  // make sure model clicked on is === test object
+  if (noticeBoardIntersect.length) {
+    
+  }
 }
