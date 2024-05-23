@@ -13,6 +13,7 @@ const camera = new Three.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new Three.WebGLRenderer({
   canvas: document.querySelector('#bg'),
 });
+const textureLoader = new Three.TextureLoader();
 const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
 
 const raycaster = new Three.Raycaster();
@@ -45,98 +46,99 @@ cameraControls.dollyInFixed(50, true);
 
 
 
+/// Load Textures
+const skybox = textureLoader.load('textures/testSkyBox.jpg');
+scene.background = skybox
 
 
+/// Load Models
+loader.load('tavern.glb', function(tavern) {
+  // tavern.scene.scale.set(100, 100, 100);'
+  tavern.scene.scale.set(25,25,25)
+  tavern.scene.position.set(0, 0, 0)
+  // set tavern material to frontSide
+  tavern.scene.traverse((child) => {
+    if (child.isMesh) {
+      child.material.side = Three.FrontSide;
+      child.material.metalness = 0
+    }
+  });
+  tavern.scene.receiveShadow = true;
+  tavern.scene.castShadow = true;
+  scene.add(tavern.scene);
+})
+  
+  
+loader.load('floating_island.glb', function(island) {
+
+  island.scene.position.set(-15, 2, 10)
+  island.scene.scale.set(20, 20, 20);
+  scene.add(island.scene);
+})
+  
+// loader.load('medieval_book.glb', function(book) {
+//   book.scene.scale.set(1, 1, 1);
+//   book.scene.position.setY(10)
+//   scene.add(book.scene);
+// })
+// loader.load('old_bookshelf.glb', function(bookshelf) {
+//   bookshelf.scene.scale.set(3.4, 3, 3.4);
+//   bookshelf.scene.position.set(2, 2.6, -10.9)
+//   bookshelf.scene.rotation.set(0, -0.015, 0)
+//   scene.add(bookshelf.scene);
+// })
+// loader.load('alchemists_manual.glb', function(manual) {
+//   manual.scene.scale.set(1000, 1000, 1000);
+//   scene.add(manual.scene);
+// })
+// loader.load('medieval_notice_board.glb', (noticeBoard) => {
+//   noticeBoard.scene.scale.set(10, 10, 10)
+//   scene.add(noticeBoard.scene);
+// })
+
+loader.load('animated_torch_flame1.glb', (gltf) => {
+  fire = gltf.scene
+  firePlaceMixer = new Three.AnimationMixer(fire);
+  
+  firePlaceMixer.clipAction(gltf.animations[0]).setDuration(3).play();
+
+  fire.scale.set(13, 5, 10);
+  fire.position.set(-34, 7, -70);
+  gltf.scene.castShadow = true
+  scene.add(fire);
+})
+
+loader.load('animated_torch_flame1.glb', (gltf) => {
+  torchFlame = gltf.scene;
+  torchFlame2 = gltf.scene.clone();
+  torchFlame3 = gltf.scene.clone();
+
+  torchMixer = new Three.AnimationMixer(torchFlame);
+  torchMixer2 = new Three.AnimationMixer(torchFlame2);
+  torchMixer3 = new Three.AnimationMixer(torchFlame3);
+
+  torchMixer.clipAction(gltf.animations[0]).setDuration(1).play();
+  torchMixer2.clipAction(gltf.animations[0]).setDuration(1).play();
+  torchMixer3.clipAction(gltf.animations[0]).setDuration(1).play();
 
 
+  torchFlame.position.set(49, 53, 79);
+  torchFlame2.position.set(49, 53, -30);
+  torchFlame3.position.set(-26, 53, -66);
+  
+  // size if using torchFlame1
+  torchFlame.scale.set(4.5, 1.5, 4.5);
+  torchFlame2.scale.set(4.5, 1.5, 4.5);
+  torchFlame3.scale.set(4.5, 1.5, 4.5);
+  scene.add(torchFlame, torchFlame2, torchFlame3);
+})
 
-  loader.load('tavern.glb', function(tavern) {
-    // tavern.scene.scale.set(100, 100, 100);'
-    tavern.scene.scale.set(25,25,25)
-    tavern.scene.position.set(0, 0, 0)
-    // set tavern material to frontSide
-    tavern.scene.traverse((child) => {
-      if (child.isMesh) {
-        child.material.side = Three.FrontSide;
-        child.material.metalness = 0
-      }
-    });
-    tavern.scene.receiveShadow = true;
-    tavern.scene.castShadow = true;
-    scene.add(tavern.scene);
-  })
-  
-  
-  loader.load('floating_island.glb', function(island) {
-  
-    island.scene.position.set(-15, 2, 10)
-    island.scene.scale.set(20, 20, 20);
-    scene.add(island.scene);
-  })
-  
-  // loader.load('medieval_book.glb', function(book) {
-  //   book.scene.scale.set(1, 1, 1);
-  //   book.scene.position.setY(10)
-  //   scene.add(book.scene);
-  // })
-  // loader.load('old_bookshelf.glb', function(bookshelf) {
-  //   bookshelf.scene.scale.set(3.4, 3, 3.4);
-  //   bookshelf.scene.position.set(2, 2.6, -10.9)
-  //   bookshelf.scene.rotation.set(0, -0.015, 0)
-  //   scene.add(bookshelf.scene);
-  // })
-  // loader.load('alchemists_manual.glb', function(manual) {
-  //   manual.scene.scale.set(1000, 1000, 1000);
-  //   scene.add(manual.scene);
-  // })
-  // loader.load('medieval_notice_board.glb', (noticeBoard) => {
-  //   noticeBoard.scene.scale.set(10, 10, 10)
-  //   scene.add(noticeBoard.scene);
-  // })
-  
-  loader.load('animated_torch_flame1.glb', (gltf) => {
-    fire = gltf.scene
-    firePlaceMixer = new Three.AnimationMixer(fire);
-    
-    firePlaceMixer.clipAction(gltf.animations[0]).setDuration(3).play();
-  
-    fire.scale.set(13, 5, 10);
-    fire.position.set(-34, 7, -70);
-    gltf.scene.castShadow = true
-    scene.add(fire);
-  })
-  
-  loader.load('animated_torch_flame1.glb', (gltf) => {
-    torchFlame = gltf.scene;
-    torchFlame2 = gltf.scene.clone();
-    torchFlame3 = gltf.scene.clone();
-  
-    torchMixer = new Three.AnimationMixer(torchFlame);
-    torchMixer2 = new Three.AnimationMixer(torchFlame2);
-    torchMixer3 = new Three.AnimationMixer(torchFlame3);
-  
-    torchMixer.clipAction(gltf.animations[0]).setDuration(1).play();
-    torchMixer2.clipAction(gltf.animations[0]).setDuration(1).play();
-    torchMixer3.clipAction(gltf.animations[0]).setDuration(1).play();
-  
-  
-    torchFlame.position.set(49, 53, 79);
-    torchFlame2.position.set(49, 53, -30);
-    torchFlame3.position.set(-26, 53, -66);
-    
-    // size if using torchFlame1
-    torchFlame.scale.set(4.5, 1.5, 4.5);
-    torchFlame2.scale.set(4.5, 1.5, 4.5);
-    torchFlame3.scale.set(4.5, 1.5, 4.5);
-    scene.add(torchFlame, torchFlame2, torchFlame3);
-  })
-
-  loader.load('medieval_notice_board.glb', (gltf) => {
-    noticeBoard = gltf.scene;
-    noticeBoard.scale.set(10, 10, 10)
-    noticeBoard.position.set(-100, 0, 0)
-    scene.add(noticeBoard);
-  })
+loader.load('medieval_notice_board.glb', (gltf) => {
+  noticeBoard = gltf.scene;
+  noticeBoard.scale.set(10, 10, 10)
+  noticeBoard.position.set(-100, 0, 0)
+  scene.add(noticeBoard);
+})
 
 
 const pointLight = new Three.PointLight(0xF07F13);
@@ -171,7 +173,7 @@ directionalLight.position.set(-1000, 500, 1000);
 scene.add(directionalLight, directionLight2);
 scene.add(pointLight, pointLight2, pointLight3, rectLight, hemiLight);
 
-scene.background = new Three.Color(0xE1C699);
+// scene.background = new Three.Color(0xE1C699);
 
 
 
@@ -187,7 +189,7 @@ function animate() {
   if (torchMixer3) torchMixer3.update(1/60);
   
   // controls.update();
-  
+
   if (hasControlsUpdated) {
     renderer.render(scene, camera);
   }  
@@ -209,6 +211,12 @@ function onDocumentMouseDown(e) {
 
   // make sure model clicked on is === test object
   if (noticeBoardIntersect.length) {
-    
+    // recurse and get the root parent
+    let cur = noticeBoardIntersect[0].object;
+
+    while(cur.parent.type !== 'Scene')
+      cur = cur.parent;
+
+    console.log(cur)
   }
 }
