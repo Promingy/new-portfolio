@@ -4,7 +4,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import CameraControls from 'camera-controls';
 import { Reflector } from 'three/examples/jsm/objects/Reflector';
 import './style.css'
-import { texture } from 'three/examples/jsm/nodes/Nodes.js';
 
 CameraControls.install ({THREE: Three})
 
@@ -15,7 +14,6 @@ const camera = new Three.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new Three.WebGLRenderer({
   canvas: document.querySelector('#bg'),
 });
-const textureLoader = new Three.TextureLoader();
 const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
 
 const raycaster = new Three.Raycaster();
@@ -49,11 +47,6 @@ cameraControls.dollyInFixed(50, true);
 // controls.minAzimuthAngle = -Math.PI / 1.65;
 
 
-
-
-/// Load Textures
-// const skybox = textureLoader.load('textures/testSkyBox.jpg');
-// scene.background = skybox
 
 
 /// Load Models
@@ -143,6 +136,19 @@ loader.load('medieval_notice_board.glb', (gltf) => {
   noticeBoard.position.set(-100, 0, 0)
   scene.add(noticeBoard);
 })
+
+loader.load('lightpost.glb', (gltf) => {
+  let clone = gltf.scene.clone();
+  clone.position.set(90, -5, -120);  
+  clone.scale.set(4.5, 4.5, 4.5);
+  clone.rotation.set(0, 2.5, 0)
+
+  gltf.scene.scale.set(4.5, 4.5, 4.5);
+  gltf.scene.position.set(-90, -5, 120)
+  gltf.scene.rotation.set(0, 2.5, 0)
+  scene.add(gltf.scene, clone)
+})
+
 /// Mirror
 const mirrorOptions = {
   clipBasis: .9, // default 0, limits reflection
@@ -164,14 +170,15 @@ scene.add(mirror)
 
 /// floor
 const floor = new Three.BoxGeometry(1000, 1, 1000);
-const floorMaterial = new Three.MeshPhongMaterial({transparent: true, opacity: 0.75});
+const floorMaterial = new Three.MeshPhongMaterial({color: 0x474948, transparent: true, opacity: 0.75});
 const floorMesh = new Three.Mesh(floor, floorMaterial);
 floorMesh.position.setY(-7);
 floorMesh.receiveShadow = true;
 scene.add(floorMesh)
 
 
-const pointLight = new Three.PointLight(0xF07F13);
+
+const pointLight = new Three.PointLight(0xF07F13, 2000);
 pointLight.castShadow = true;
 
 pointLight.shadow.mapSize.width = 512;
@@ -182,43 +189,55 @@ pointLight.shadow.camera.near = 0.1;
 const pointLight2 = pointLight.clone();
 const pointLight3 = pointLight.clone();
 
+const streetLight1 = new Three.PointLight(0xffd21c, 3000, 0, 2)
+streetLight1.castShadow = true;
+const streetLight2 = streetLight1.clone();
+const streetLight3 = streetLight1.clone();
+const streetLight4 = streetLight1.clone();
+
 pointLight.position.set(44, 50, 80);
-pointLight.intensity = 2000;
-
 pointLight2.position.set(44, 50, -30);
-pointLight2.intensity = 2000;
-
 pointLight3.position.set(-25, 50, -60);
-pointLight3.intensity = 2000;
+streetLight1.position.set(-98.5, 80, 114);
+streetLight2.position.set(-82.5, 80, 127);
+streetLight3.position.set(98.5, 80, -114);
+streetLight4.position.set(82.5, 80, -127);
 
 
-const  rectLight = new Three.RectAreaLight( "orange", 100, 20, 15);
-rectLight.position.set(-33.5, 10, -73);
-rectLight.rotateX(3.14);
+
+// const  rectLight = new Three.RectAreaLight( "orange", 100, 20, 15);
+const  firePlaceLight = new Three.PointLight( "orange", 2500, 0, 1.8);
+firePlaceLight.position.set(-33.5, 10, -65);
+firePlaceLight.rotateX(3.14);
+
+firePlaceLight.castShadow = true;
+firePlaceLight.shadow.mapSize.width = 512;
+firePlaceLight.shadow.mapSize.height = 512;
+firePlaceLight.shadow.camera.far = 1000;
+firePlaceLight.shadow.camera.near = 0.1;
+
+const lightHelper = new Three.PointLightHelper(streetLight2);
 
 
 var hemiLight = new Three.HemisphereLight( 0xffffff, 0x444444, .25);
 hemiLight.position.set( 0, 300, 0 );
 
 
-const directionalLight = new Three.DirectionalLight("orange", .5);
-const directionLight2 = directionalLight.clone();
-// directionalLight.position.set(0, 0, -200);
-directionalLight.position.set(-1000, 500, 1000);
-// directionLight2.position.set(1000, 250, -1000);
+
+// moonLight
+const moonLight = new Three.DirectionalLight(0x7f7f7f, .33);
+moonLight.position.set(90, 300, -120)
+scene.add(moonLight);
 
 
-// scene.add(directionalLight, directionLight2);
-scene.add(pointLight, pointLight2, pointLight3, rectLight);
-
-// scene.background = new Three.Color(0xE1C699);
+scene.add(pointLight, pointLight2, pointLight3, streetLight1, streetLight2, streetLight3, streetLight4, firePlaceLight);
 
 
 
 
 function animate() {
   const delta = clock.getDelta();
-  const hasControlsUpdated = cameraControls.update(delta);
+  cameraControls.update(delta);
   requestAnimationFrame(animate);
   
   if (firePlaceMixer) firePlaceMixer.update(1/60);
