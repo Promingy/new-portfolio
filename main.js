@@ -2,7 +2,9 @@ import * as Three from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import CameraControls from 'camera-controls';
+import { Reflector } from 'three/examples/jsm/objects/Reflector';
 import './style.css'
+import { texture } from 'three/examples/jsm/nodes/Nodes.js';
 
 CameraControls.install ({THREE: Three})
 
@@ -47,8 +49,8 @@ cameraControls.dollyInFixed(50, true);
 
 
 /// Load Textures
-const skybox = textureLoader.load('textures/testSkyBox.jpg');
-scene.background = skybox
+// const skybox = textureLoader.load('textures/testSkyBox.jpg');
+// scene.background = skybox
 
 
 /// Load Models
@@ -63,18 +65,16 @@ loader.load('tavern.glb', function(tavern) {
       child.material.metalness = 0
     }
   });
-  tavern.scene.receiveShadow = true;
-  tavern.scene.castShadow = true;
   scene.add(tavern.scene);
 })
   
   
-loader.load('floating_island.glb', function(island) {
+// loader.load('floating_island.glb', function(island) {
 
-  island.scene.position.set(-15, 2, 10)
-  island.scene.scale.set(20, 20, 20);
-  scene.add(island.scene);
-})
+//   island.scene.position.set(-15, 2, 10)
+//   island.scene.scale.set(20, 20, 20);
+//   scene.add(island.scene);
+// })
   
 // loader.load('medieval_book.glb', function(book) {
 //   book.scene.scale.set(1, 1, 1);
@@ -104,7 +104,6 @@ loader.load('animated_torch_flame1.glb', (gltf) => {
 
   fire.scale.set(13, 5, 10);
   fire.position.set(-34, 7, -70);
-  gltf.scene.castShadow = true
   scene.add(fire);
 })
 
@@ -139,6 +138,31 @@ loader.load('medieval_notice_board.glb', (gltf) => {
   noticeBoard.position.set(-100, 0, 0)
   scene.add(noticeBoard);
 })
+/// Mirror
+const mirrorOptions = {
+  clipBasis: .9, // default 0, limits reflection
+  textureWidth: window.innerWidth * window.devicePixelRatio, // default 512, scales by pixel ratio of device
+  textureHeight: window.innerHeight * window.devicePixelRatio, // default 512, scales by pixel ratio of device
+  color: new Three.Color(0x7f7f7f), // default 0x7F7F7F
+  multisample: 1, // default 4; type of antialiasing (improve quality)
+
+  shader: Reflector.ReflectorShader, // default Reflector.ReflectorShader
+}
+
+const mirrorGeometry = new Three.PlaneGeometry(1000, 1000);
+// New instance of reflector class
+const mirror = new Reflector(mirrorGeometry, mirrorOptions);
+
+mirror.rotation.x = -Math.PI / 2;
+mirror.position.setY(-7);
+scene.add(mirror)
+
+/// floor
+const floor = new Three.BoxGeometry(1000, 1, 1000);
+const floorMaterial = new Three.MeshPhongMaterial({transparent: true, opacity: 0.95});
+const floorMesh = new Three.Mesh(floor, floorMaterial);
+floorMesh.position.setY(-7);
+scene.add(floorMesh)
 
 
 const pointLight = new Three.PointLight(0xF07F13);
@@ -146,13 +170,13 @@ const pointLight2 = pointLight.clone();
 const pointLight3 = pointLight.clone();
 
 pointLight.position.set(44, 50, 80);
-pointLight.intensity = 1000;
+pointLight.intensity = 2000;
 
 pointLight2.position.set(44, 50, -30);
-pointLight2.intensity = 1000;
+pointLight2.intensity = 2000;
 
 pointLight3.position.set(-25, 50, -60);
-pointLight3.intensity = 1000;
+pointLight3.intensity = 2000;
 
 
 const  rectLight = new Three.RectAreaLight( "orange", 100, 20, 15);
@@ -170,8 +194,8 @@ directionalLight.position.set(-1000, 500, 1000);
 // directionLight2.position.set(1000, 250, -1000);
 
 
-scene.add(directionalLight, directionLight2);
-scene.add(pointLight, pointLight2, pointLight3, rectLight, hemiLight);
+// scene.add(directionalLight, directionLight2);
+scene.add(pointLight, pointLight2, pointLight3, rectLight);
 
 // scene.background = new Three.Color(0xE1C699);
 
@@ -190,9 +214,7 @@ function animate() {
   
   // controls.update();
 
-  if (hasControlsUpdated) {
-    renderer.render(scene, camera);
-  }  
+  renderer.render(scene, camera);
 };
 
 animate();
