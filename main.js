@@ -27,16 +27,18 @@ renderer.shadowMap.type = Three.PCFSoftShadowMap;
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.setZ(100);
-camera.position.setY(50);
-camera.position.setX(-100);
-
+camera.position.set(-200, 150, 200);
 
 renderer.render(scene, camera);
 
+scene.fog = new Three.Fog(0x000000, 100, 1200);
+
 const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
-// cameraControls.dollyInFixed(50, true);
+cameraControls.maxDistance = 700;
+cameraControls.minDistance = 200;
+cameraControls.maxPolarAngle = Math.PI / 2;
+cameraControls.truckSpeed = 0;
 
 /// Orbit Controls
 // const controls = new OrbitControls(camera, renderer.domElement);
