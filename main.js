@@ -20,7 +20,10 @@ const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3.us-east
 
 const raycaster = new Three.Raycaster();
 const mouse = new Three.Vector2();
-renderer.domElement.addEventListener('click', onDocumentMouseDown)
+
+renderer.domElement.addEventListener('click', onDocumentMouseDown);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = Three.PCFSoftShadowMap;
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -63,6 +66,8 @@ loader.load('tavern.glb', function(tavern) {
     if (child.isMesh) {
       child.material.side = Three.FrontSide;
       child.material.metalness = 0
+      child.receiveShadow = true;
+      child.castShadow = true;
     }
   });
   scene.add(tavern.scene);
@@ -159,13 +164,21 @@ scene.add(mirror)
 
 /// floor
 const floor = new Three.BoxGeometry(1000, 1, 1000);
-const floorMaterial = new Three.MeshPhongMaterial({transparent: true, opacity: 0.95});
+const floorMaterial = new Three.MeshPhongMaterial({transparent: true, opacity: 0.75});
 const floorMesh = new Three.Mesh(floor, floorMaterial);
 floorMesh.position.setY(-7);
+floorMesh.receiveShadow = true;
 scene.add(floorMesh)
 
 
 const pointLight = new Three.PointLight(0xF07F13);
+pointLight.castShadow = true;
+
+pointLight.shadow.mapSize.width = 512;
+pointLight.shadow.mapSize.height = 512;
+pointLight.shadow.camera.far = 1000;
+pointLight.shadow.camera.near = 0.1;
+
 const pointLight2 = pointLight.clone();
 const pointLight3 = pointLight.clone();
 
@@ -182,6 +195,7 @@ pointLight3.intensity = 2000;
 const  rectLight = new Three.RectAreaLight( "orange", 100, 20, 15);
 rectLight.position.set(-33.5, 10, -73);
 rectLight.rotateX(3.14);
+
 
 var hemiLight = new Three.HemisphereLight( 0xffffff, 0x444444, .25);
 hemiLight.position.set( 0, 300, 0 );
