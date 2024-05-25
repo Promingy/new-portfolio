@@ -8,6 +8,7 @@ CameraControls.install ({THREE: Three})
 
 let fire, torchFlame, torchFlame2, torchFlame3, firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
 let sconeFlame, sconeFlame2, sconeFlame3, sconeFlame4, sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
+let panCamera = true;
 
 const scene = new Three.Scene();
 const camera = new Three.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -26,16 +27,18 @@ renderer.shadowMap.type = Three.PCFSoftShadowMap;
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.set(-200, 150, 200);
+camera.position.set(-250, 200, 250);
 
 renderer.render(scene, camera);
+
 
 scene.fog = new Three.Fog(0x000000, 100, 1200);
 
 const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
-cameraControls.maxDistance = 700;
-cameraControls.minDistance = 200;
+cameraControls.maxDistance = 400;
+// cameraControls.maxDistance = 700;
+cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
 cameraControls.truckSpeed = 0;
 
@@ -90,7 +93,7 @@ function loadModels() {
     fire = gltf.scene
     firePlaceMixer = new Three.AnimationMixer(fire);
     
-    firePlaceMixer.clipAction(gltf.animations[0]).setDuration(3).play();
+    firePlaceMixer.clipAction(gltf.animations[0]).setDuration(1).play();
 
     fire.scale.set(13, 5, 10);
     fire.position.set(-34, 7, -70);
@@ -155,8 +158,17 @@ function loadModels() {
 
   loader.load('medieval_notice_board.glb', (gltf) => {
     noticeBoard = gltf.scene;
+
+    noticeBoard.traverse(child => {
+        child.receiveShadow = true;
+        child.castShadow = true;
+    
+    })
+
     noticeBoard.scale.set(10, 10, 10)
-    noticeBoard.position.set(-130, -5, -70)
+    // noticeBoard.position.set(-130, -5, -70)
+    noticeBoard.position.set(52, -5, 150)
+    noticeBoard.rotation.set(0, -1.575, 0)
     scene.add(noticeBoard);
   })
 
@@ -232,13 +244,18 @@ function loadLights() {
   const sconceLight2 = interiorWallLight.clone();
   const sconceLight3 = interiorWallLight.clone();
   const sconceLight4 = interiorWallLight.clone();
+
+  sconceLight.decay = 1.5;
+  sconceLight2.decay = 1.5;
+  sconceLight3.decay = 1.5;
+  sconceLight4.decay = 1.5;
   
   sconceLight.position.set(65, 63, 120);
   sconceLight2.position.set(65, 63, -70);
   sconceLight3.position.set(53, 63, -83);
   sconceLight4.position.set(-90, 63, -83)
   
-  const streetLight1 = new Three.PointLight(0xffd21c, 3000, 0, 2)
+  const streetLight1 = new Three.PointLight(0xffd21c, 3000, 0, 1.7)
   streetLight1.castShadow = true;
   
   const streetLight2 = streetLight1.clone();
@@ -282,6 +299,12 @@ function animate() {
   
   // controls.update();
 
+  // if test is true camera will pan around the scene
+  if (panCamera) {
+    // cameraControls.truck(-0.1);
+    cameraControls.rotate(0.002, 0);
+  }
+  
   renderer.render(scene, camera);
 };
 
