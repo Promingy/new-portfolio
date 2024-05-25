@@ -34,7 +34,7 @@ renderer.render(scene, camera);
 
 const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
-cameraControls.dollyInFixed(50, true);
+// cameraControls.dollyInFixed(50, true);
 
 /// Orbit Controls
 // const controls = new OrbitControls(camera, renderer.domElement);
@@ -50,8 +50,8 @@ cameraControls.dollyInFixed(50, true);
 
 
 /// Load Models
-loader.load('tavern.glb', function(tavern) {
-  // tavern.scene.scale.set(100, 100, 100);'
+loader.load('updated_tavern.glb', function(tavern) {
+
   tavern.scene.scale.set(25,25,25)
   tavern.scene.position.set(0, 0, 0)
   // set tavern material to frontSide
@@ -89,10 +89,7 @@ loader.load('tavern.glb', function(tavern) {
 //   manual.scene.scale.set(1000, 1000, 1000);
 //   scene.add(manual.scene);
 // })
-// loader.load('medieval_notice_board.glb', (noticeBoard) => {
-//   noticeBoard.scene.scale.set(10, 10, 10)
-//   scene.add(noticeBoard.scene);
-// })
+
 
 loader.load('animated_torch_flame1.glb', (gltf) => {
   fire = gltf.scene
@@ -138,15 +135,10 @@ loader.load('medieval_notice_board.glb', (gltf) => {
 })
 
 loader.load('lightpost.glb', (gltf) => {
-  let clone = gltf.scene.clone();
-  clone.position.set(90, -5, -120);  
-  clone.scale.set(4.5, 4.5, 4.5);
-  clone.rotation.set(0, 2.5, 0)
-
   gltf.scene.scale.set(4.5, 4.5, 4.5);
   gltf.scene.position.set(-90, -5, 120)
   gltf.scene.rotation.set(0, 2.5, 0)
-  scene.add(gltf.scene, clone)
+  scene.add(gltf.scene)
 })
 
 /// Mirror
@@ -177,36 +169,23 @@ floorMesh.receiveShadow = true;
 scene.add(floorMesh)
 
 
+/// Interior Lights
+const interiorWallLight = new Three.PointLight(0xF07F13, 2000);
+interiorWallLight.castShadow = true;
 
-const pointLight = new Three.PointLight(0xF07F13, 2000);
-pointLight.castShadow = true;
+interiorWallLight.shadow.mapSize.width = 512;
+interiorWallLight.shadow.mapSize.height = 512;
+interiorWallLight.shadow.camera.far = 1000;
+interiorWallLight.shadow.camera.near = 0.1;
 
-pointLight.shadow.mapSize.width = 512;
-pointLight.shadow.mapSize.height = 512;
-pointLight.shadow.camera.far = 1000;
-pointLight.shadow.camera.near = 0.1;
+const interiorWallLight2 = interiorWallLight.clone();
+const interiorWallLight3 = interiorWallLight.clone();
 
-const pointLight2 = pointLight.clone();
-const pointLight3 = pointLight.clone();
+interiorWallLight.position.set(44, 50, 80);
+interiorWallLight2.position.set(44, 50, -30);
+interiorWallLight3.position.set(-25, 50, -60);
 
-const streetLight1 = new Three.PointLight(0xffd21c, 3000, 0, 2)
-streetLight1.castShadow = true;
-const streetLight2 = streetLight1.clone();
-const streetLight3 = streetLight1.clone();
-const streetLight4 = streetLight1.clone();
-
-pointLight.position.set(44, 50, 80);
-pointLight2.position.set(44, 50, -30);
-pointLight3.position.set(-25, 50, -60);
-streetLight1.position.set(-98.5, 80, 114);
-streetLight2.position.set(-82.5, 80, 127);
-streetLight3.position.set(98.5, 80, -114);
-streetLight4.position.set(82.5, 80, -127);
-
-
-
-// const  rectLight = new Three.RectAreaLight( "orange", 100, 20, 15);
-const  firePlaceLight = new Three.PointLight( "orange", 2500, 0, 1.8);
+const firePlaceLight = new Three.PointLight( "orange", 2500, 0, 1.8);
 firePlaceLight.position.set(-33.5, 10, -65);
 firePlaceLight.rotateX(3.14);
 
@@ -216,12 +195,24 @@ firePlaceLight.shadow.mapSize.height = 512;
 firePlaceLight.shadow.camera.far = 1000;
 firePlaceLight.shadow.camera.near = 0.1;
 
-const lightHelper = new Three.PointLightHelper(streetLight2);
+/// Exterior Lights
+const sconceLight = interiorWallLight.clone();
+const sconceLight2 = interiorWallLight.clone();
+const sconceLight3 = interiorWallLight.clone();
+const sconceLight4 = interiorWallLight.clone();
+
+sconceLight.position.set(75, 63, 120);
+
+const streetLight1 = new Three.PointLight(0xffd21c, 3000, 0, 2)
+streetLight1.castShadow = true;
+
+const streetLight2 = streetLight1.clone();
+
+streetLight1.position.set(-98.5, 80, 114);
+streetLight2.position.set(-82.5, 80, 127);
 
 
-var hemiLight = new Three.HemisphereLight( 0xffffff, 0x444444, .25);
-hemiLight.position.set( 0, 300, 0 );
-
+const lightHelper = new Three.PointLightHelper(sconceLight);
 
 
 // moonLight
@@ -230,8 +221,9 @@ moonLight.position.set(90, 300, -120)
 scene.add(moonLight);
 
 
-scene.add(pointLight, pointLight2, pointLight3, streetLight1, streetLight2, streetLight3, streetLight4, firePlaceLight);
-
+scene.add(interiorWallLight, interiorWallLight2, interiorWallLight3, firePlaceLight);
+scene.add(sconceLight, sconceLight2, sconceLight3, sconceLight4, lightHelper);
+scene.add(streetLight1, streetLight2)
 
 
 
