@@ -1,5 +1,4 @@
 import * as Three from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import CameraControls from 'camera-controls';
 import { Reflector } from 'three/examples/jsm/objects/Reflector';
@@ -40,21 +39,8 @@ cameraControls.minDistance = 200;
 cameraControls.maxPolarAngle = Math.PI / 2;
 cameraControls.truckSpeed = 0;
 
-/// Orbit Controls
-// const controls = new OrbitControls(camera, renderer.domElement);
-// controls.maxDistance = 700;
-// controls.minDistance = 150;
-// controls.enablePan = false;
-// controls.maxPolarAngle = Math.PI / 2.2;
-// controls.minPolarAngle = Math.PI / 5;
-// controls.maxAzimuthAngle = Math.PI / 10;
-// controls.minAzimuthAngle = -Math.PI / 1.65;
-
-
-
 
 /// Load Models
-
 function loadModels() {
   loader.load('updated_tavern.glb', function(tavern) {
 
@@ -265,7 +251,7 @@ function loadLights() {
   
   
   // moonLight
-  const moonLight = new Three.DirectionalLight(0x7f7f7f, .33);
+  const moonLight = new Three.DirectionalLight(0x7f7f7f, .5);
   moonLight.position.set(90, 300, -120)
   scene.add(moonLight);
   
