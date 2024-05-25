@@ -14,7 +14,8 @@ const camera = new Three.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new Three.WebGLRenderer({
   canvas: document.querySelector('#bg'),
 });
-const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
+// const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
+const loader = new GLTFLoader().setPath('models/');
 
 const raycaster = new Three.Raycaster();
 const mouse = new Three.Vector2();
@@ -59,8 +60,11 @@ loader.load('updated_tavern.glb', function(tavern) {
     if (child.isMesh) {
       child.material.side = Three.FrontSide;
       child.material.metalness = 0
-      child.receiveShadow = true;
-      child.castShadow = true;
+
+      if (!child.material.name.startsWith('lambert1') ){
+        child.receiveShadow = true;
+        child.castShadow = true;
+      }
     }
   });
   scene.add(tavern.scene);
@@ -201,7 +205,8 @@ const sconceLight2 = interiorWallLight.clone();
 const sconceLight3 = interiorWallLight.clone();
 const sconceLight4 = interiorWallLight.clone();
 
-sconceLight.position.set(75, 63, 120);
+sconceLight.position.set(65, 63, 120);
+sconceLight2.position.set(65, 63, -70);
 
 const streetLight1 = new Three.PointLight(0xffd21c, 3000, 0, 2)
 streetLight1.castShadow = true;
@@ -212,7 +217,7 @@ streetLight1.position.set(-98.5, 80, 114);
 streetLight2.position.set(-82.5, 80, 127);
 
 
-const lightHelper = new Three.PointLightHelper(sconceLight);
+const lightHelper = new Three.PointLightHelper(sconceLight2);
 
 
 // moonLight
@@ -254,16 +259,22 @@ function onDocumentMouseDown(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
+  // const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
+  const intersect = raycaster.intersectObjects(scene.children, true);
 
   // make sure model clicked on is === test object
-  if (noticeBoardIntersect.length) {
-    // recurse and get the root parent
-    let cur = noticeBoardIntersect[0].object;
+  // if (noticeBoardIntersect.length) {
+  //   // recurse and get the root parent
+  //   let cur = noticeBoardIntersect[0].object;
 
-    while(cur.parent.type !== 'Scene')
-      cur = cur.parent;
+  //   while(cur.parent.type !== 'Scene')
+  //     cur = cur.parent;
 
-    console.log(cur)
-  }
+  //   console.log(cur)
+  // }
+
+  // if (intersect.length) {
+  //   console.log(intersect[0].object);
+  // }
+
 }
