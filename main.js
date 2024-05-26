@@ -8,7 +8,7 @@ CameraControls.install ({THREE: Three})
 
 let fire, torchFlame, torchFlame2, torchFlame3, firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
 let sconeFlame, sconeFlame2, sconeFlame3, sconeFlame4, sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
-let panCamera = true;
+let panCamera = false;
 
 const scene = new Three.Scene();
 const camera = new Three.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -38,9 +38,9 @@ const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
 cameraControls.maxDistance = 400;
 // cameraControls.maxDistance = 700;
-cameraControls.minDistance = 170;
+// cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
-cameraControls.truckSpeed = 0;
+// cameraControls.truckSpeed = 0;
 
 
 /// Load Models
@@ -156,7 +156,7 @@ function loadModels() {
     scene.add(sconeFlame, sconeFlame2, sconeFlame3, sconeFlame4);
   })
 
-  loader.load('medieval_notice_board.glb', (gltf) => {
+  loader.load('bounty_board_w_resume.glb', (gltf) => {
     noticeBoard = gltf.scene;
 
     noticeBoard.traverse(child => {
@@ -164,6 +164,7 @@ function loadModels() {
         child.castShadow = true;
     
     })
+
 
     noticeBoard.scale.set(10, 10, 10)
     // noticeBoard.position.set(-130, -5, -70)
