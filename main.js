@@ -30,10 +30,9 @@ scene.fog = new Three.Fog(0x000000, 100, 1200);
 
 
 // set camera position
-camera.position.set(250, 200, 250);
+camera.position.set(-250, 200, 250);
 // camera.position.set(0, 17, 200);
 
-renderer.render(scene, camera);
 
 // instantiate transform controls
 const tControls = new TransformControls(camera, renderer.domElement);
@@ -60,15 +59,13 @@ renderer.domElement.addEventListener('click', onDocumentMouseDown);
 // set cameraControls properties
 const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
-// cameraControls.maxDistance = 400;
-cameraControls.maxDistance = 700;
+cameraControls.maxDistance = 400;
+// cameraControls.maxDistance = 700;
 cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
 cameraControls.truckSpeed = 0;
 cameraControls.enabled = true;
 
-// cameraControls.setOrbitPoint(52, -5, 195)
-cameraControls.rotate(-1.5, 0)
 
 
 
@@ -255,7 +252,7 @@ floorMesh.receiveShadow = true;
 scene.add(floorMesh)
 
 /// hotPoint Sphere
-const hotPointGeo = new Three.SphereGeometry(2, 2.5, 2.5);
+const hotPointGeo = new Three.SphereGeometry(5, 5, 5);
 const hotPointMaterial = new Three.MeshBasicMaterial({color: 0xffffff});
 const hotPoint = new Three.Mesh(hotPointGeo, hotPointMaterial);
 hotPoint.position.set(52, 22, 177);
@@ -354,14 +351,14 @@ function animate() {
   if (sconeFlameMixer3) sconeFlameMixer3.update(1/60);
   if (sconeFlameMixer4) sconeFlameMixer4.update(1/60);
   
-  if (tControls.dragging) {
-    cameraControls.enabled = false;
-    console.log('position', tControls.object.position);
-    console.log('rotation', tControls.object.rotation);
-    console.log('scale', tControls.object.scale);
-  } else {
-    cameraControls.enabled = true;
-  }
+  // if (tControls.dragging) {
+  //   cameraControls.enabled = false;
+  //   console.log('position', tControls.object.position);
+  //   console.log('rotation', tControls.object.rotation);
+  //   console.log('scale', tControls.object.scale);
+  // } else {
+  //   cameraControls.enabled = true;
+  // }
   
   if (panCamera) {
     // cameraControls.truck(-0.1);
@@ -380,19 +377,44 @@ function onDocumentMouseDown(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  // const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
+  const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
   const sphereIntersect = raycaster.intersectObject(hotPoint, true);
   const intersect = raycaster.intersectObjects(scene.children, true);
 
+  if (sphereIntersect.length || noticeBoardIntersect.length) {
+
+    if (!panCamera) {
+      cameraControls.enabled = true;
+      panCamera = true;
+      cameraControls.setLookAt(-250, 200, 250, 0, 0, 0, true);
+    }else {
+    cameraControls.enabled = false;
+    panCamera = false;
+    // const position = sphereIntersect[0].object.position;
+    // const x = position.x; //52
+    // const y = position.y - 6; //16
+    // const z = position.z - 38; //139
+    // cameraControls.setLookAt(x - 12, y, z, x, y, z, true);
+    cameraControls.setLookAt(52 - 12, 16, 139, 52, 16, 139, true);
+    // console.log(x, y, z)
+    }
+  }
+
   // make sure model clicked on is === test object
   // if (noticeBoardIntersect.length) {
-  //   // recurse and get the root parent
-  //   let cur = noticeBoardIntersect[0].object;
+  //   if (!panCamera) {
+  //     panCamera = true;
+  //     cameraControls.enabled = true;
+  //     cameraControls.setLookAt(-250, 200, 250, 0, 0, 0, true);
+  //   }
 
-  //   while(cur.parent.type !== 'Scene')
-  //     cur = cur.parent;
+    // recurse and get the root parent
+    // let cur = noticeBoardIntersect[0].object;
 
-  //   console.log(cur)
+    // while(cur.parent.type !== 'Scene')
+    //   cur = cur.parent;
+
+    // console.log(cur)
   // }
 
   // if (intersect.length) {
