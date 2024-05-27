@@ -7,6 +7,7 @@ import './style.css'
 
 CameraControls.install ({THREE: Three})
 
+
 // initialize animation variables
 let firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
 let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
@@ -201,8 +202,12 @@ function loadModels() {
         child.receiveShadow = true;
         child.castShadow = true;
 
-        if (child.isMesh)
+        if (child.isMesh){
           child.material.map.anisotropy = maxAnisotropy;
+          child.material.map.minFilter = Three.NearestFilter;
+          child.material.map.magFilter = Three.NearestFilter;
+          console.log(child)
+        }
     
     })
 
@@ -395,7 +400,7 @@ function onDocumentMouseDown(e) {
     // const y = position.y - 6; //16
     // const z = position.z - 38; //139
     // cameraControls.setLookAt(x - 12, y, z, x, y, z, true);
-    cameraControls.setLookAt(52 - 12, 16, 139, 52, 16, 139, true);
+    cameraControls.setLookAt(52 - 11, 16, 139, 52, 16, 139, true);
     // console.log(x, y, z)
     }
   }
