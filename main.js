@@ -2,22 +2,40 @@ import * as Three from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import CameraControls from 'camera-controls';
 import { Reflector } from 'three/examples/jsm/objects/Reflector';
+import { TransformControls } from 'three/examples/jsm/Addons.js';
 import './style.css'
 
 CameraControls.install ({THREE: Three})
 
-let fire, torchFlame, torchFlame2, torchFlame3, firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
-let sconeFlame, sconeFlame2, sconeFlame3, sconeFlame4, sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
+// initialize animation variables
+let firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
+let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
 let panCamera = false;
 
+
+// instantiate scene, camera, and renderer
 const scene = new Three.Scene();
 const camera = new Three.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new Three.WebGLRenderer({
   canvas: document.querySelector('#bg'),
 });
+
+
+// instantiate transform controls
+const tControls = new TransformControls(camera, renderer.domElement);
+tControls.setMode('scale');
+
+
+// set max anisotropy - improves texture quality ( we'll use this in the loader)
+const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+
+
+// instantiate GLTFLoader - used to load 3D models - one linked to AWS the other for local files
 // const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
 const loader = new GLTFLoader().setPath('models/');
 
+
+// instantiate raycaster and mouse - to detect user clicks and move the camera to hotpoints
 const raycaster = new Three.Raycaster();
 const mouse = new Three.Vector2();
 
@@ -27,7 +45,8 @@ renderer.shadowMap.type = Three.PCFSoftShadowMap;
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.set(-250, 200, 250);
+// camera.position.set(-250, 200, 250);
+camera.position.set(0, 17, 200);
 
 renderer.render(scene, camera);
 
@@ -36,12 +55,16 @@ scene.fog = new Three.Fog(0x000000, 100, 1200);
 
 const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
-cameraControls.maxDistance = 400;
+// cameraControls.maxDistance = 400;
 // cameraControls.maxDistance = 700;
 // cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
-// cameraControls.truckSpeed = 0;
+cameraControls.truckSpeed = 0;
+cameraControls.enabled = true;
 
+cameraControls.setOrbitPoint(0, -5, 195)
+// cameraControls.setOrbitPoint(52, -5, 195)
+cameraControls.rotate(-1.5, 0)
 
 /// Load Models
 function loadModels() {
@@ -61,6 +84,7 @@ function loadModels() {
         }
       }
     });
+
     scene.add(tavern.scene);
   })
     
@@ -90,7 +114,7 @@ function loadModels() {
 
 
   loader.load('animated_torch_flame1.glb', (gltf) => {
-    fire = gltf.scene
+    const fire = gltf.scene
     firePlaceMixer = new Three.AnimationMixer(fire);
     
     firePlaceMixer.clipAction(gltf.animations[0]).setDuration(1).play();
@@ -101,15 +125,15 @@ function loadModels() {
   })
 
   loader.load('animated_torch_flame1.glb', (gltf) => {
-    torchFlame = gltf.scene;
-    torchFlame2 = gltf.scene.clone();
-    torchFlame3 = gltf.scene.clone();
+    const torchFlame = gltf.scene;
+    const torchFlame2 = gltf.scene.clone();
+    const torchFlame3 = gltf.scene.clone();
 
     //sconce flames
-    sconeFlame = gltf.scene.clone();
-    sconeFlame2 = gltf.scene.clone();
-    sconeFlame3 = gltf.scene.clone();
-    sconeFlame4 = gltf.scene.clone();
+    const sconeFlame = gltf.scene.clone();
+    const sconeFlame2 = gltf.scene.clone();
+    const sconeFlame3 = gltf.scene.clone();
+    const sconeFlame4 = gltf.scene.clone();
 
     torchMixer = new Three.AnimationMixer(torchFlame);
     torchMixer2 = new Three.AnimationMixer(torchFlame2);
@@ -162,6 +186,9 @@ function loadModels() {
     noticeBoard.traverse(child => {
         child.receiveShadow = true;
         child.castShadow = true;
+        if (child.isMesh) {
+          child.material.map.anisotropy = maxAnisotropy;
+        }
     
     })
 
@@ -170,6 +197,8 @@ function loadModels() {
     // noticeBoard.position.set(-130, -5, -70)
     noticeBoard.position.set(52, -5, 150)
     noticeBoard.rotation.set(0, -1.575, 0)
+
+    tControls.attach(noticeBoard)
     scene.add(noticeBoard);
   })
 
@@ -279,6 +308,8 @@ function loadLights() {
   scene.add(streetLight1, streetLight2)
 }
 
+scene.add(tControls);
+
 
 loadModels();
 loadLights();
@@ -298,9 +329,15 @@ function animate() {
   if (sconeFlameMixer3) sconeFlameMixer3.update(1/60);
   if (sconeFlameMixer4) sconeFlameMixer4.update(1/60);
   
-  // controls.update();
-
-  // if test is true camera will pan around the scene
+  if (tControls.dragging) {
+    cameraControls.enabled = false;
+    console.log('position', tControls.object.position);
+    console.log('rotation', tControls.object.rotation);
+    console.log('scale', tControls.object.scale);
+  } else {
+    cameraControls.enabled = true;
+  }
+  
   if (panCamera) {
     // cameraControls.truck(-0.1);
     cameraControls.rotate(0.002, 0);
