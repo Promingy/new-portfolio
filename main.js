@@ -10,7 +10,7 @@ CameraControls.install ({THREE: Three})
 // initialize animation variables
 let firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
 let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
-let panCamera = false;
+let panCamera = true;
 
 
 // instantiate scene, camera, and renderer
@@ -21,9 +21,23 @@ const renderer = new Three.WebGLRenderer({
 });
 
 
+// set renderer properties
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = Three.PCFSoftShadowMap;
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+scene.fog = new Three.Fog(0x000000, 100, 1200);
+
+
+// set camera position
+camera.position.set(250, 200, 250);
+// camera.position.set(0, 17, 200);
+
+renderer.render(scene, camera);
+
 // instantiate transform controls
 const tControls = new TransformControls(camera, renderer.domElement);
-tControls.setMode('scale');
+tControls.setMode('translate');
 
 
 // set max anisotropy - improves texture quality ( we'll use this in the loader)
@@ -38,54 +52,52 @@ const loader = new GLTFLoader().setPath('models/');
 // instantiate raycaster and mouse - to detect user clicks and move the camera to hotpoints
 const raycaster = new Three.Raycaster();
 const mouse = new Three.Vector2();
-
 renderer.domElement.addEventListener('click', onDocumentMouseDown);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = Three.PCFSoftShadowMap;
-
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
-// camera.position.set(-250, 200, 250);
-camera.position.set(0, 17, 200);
-
-renderer.render(scene, camera);
 
 
-scene.fog = new Three.Fog(0x000000, 100, 1200);
 
+// instantiate camera controls - used to move the camera around the scene
+// set cameraControls properties
 const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
 // cameraControls.maxDistance = 400;
-// cameraControls.maxDistance = 700;
-// cameraControls.minDistance = 170;
+cameraControls.maxDistance = 700;
+cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
 cameraControls.truckSpeed = 0;
 cameraControls.enabled = true;
 
-cameraControls.setOrbitPoint(0, -5, 195)
 // cameraControls.setOrbitPoint(52, -5, 195)
 cameraControls.rotate(-1.5, 0)
 
-/// Load Models
-function loadModels() {
-  loader.load('updated_tavern.glb', function(tavern) {
 
-    tavern.scene.scale.set(25,25,25)
-    tavern.scene.position.set(0, 0, 0)
-    // set tavern material to frontSide
-    tavern.scene.traverse((child) => {
+
+// create a function loadModels, that goes through and loads all of our 3D models
+function loadModels() {
+
+  // load the Tavern
+  loader.load('updated_tavern.glb', function(gltf) {
+    const tavern = gltf.scene;
+
+    // set tavern properties
+    tavern.scale.set(25,25,25);
+    tavern.position.set(0, 0, 0);
+
+    tavern.traverse((child) => {
       if (child.isMesh) {
         child.material.side = Three.FrontSide;
-        child.material.metalness = 0
+        // child.material.metalness = 0;
 
+        // filter out all of the lambert1 materials (sconces on the back of tavern)
+        // and set them to receive and cast shadows
         if (!child.material.name.startsWith('lambert1') ){
           child.receiveShadow = true;
           child.castShadow = true;
-        }
-      }
+        };
+      };
     });
 
-    scene.add(tavern.scene);
+    scene.add(tavern);
   })
     
     
@@ -117,66 +129,71 @@ function loadModels() {
     const fire = gltf.scene
     firePlaceMixer = new Three.AnimationMixer(fire);
     
+    // set fire animation
     firePlaceMixer.clipAction(gltf.animations[0]).setDuration(1).play();
 
+    // set fire properties
     fire.scale.set(13, 5, 10);
     fire.position.set(-34, 7, -70);
+
     scene.add(fire);
   })
 
   loader.load('animated_torch_flame1.glb', (gltf) => {
+    // torch flames
     const torchFlame = gltf.scene;
+    torchFlame.scale.set(4.5, 1.5, 4.5);
+
+
     const torchFlame2 = gltf.scene.clone();
     const torchFlame3 = gltf.scene.clone();
 
     //sconce flames
     const sconeFlame = gltf.scene.clone();
+    sconeFlame.scale.set(4.5, 1.5, 4.5);
+
+  
     const sconeFlame2 = gltf.scene.clone();
     const sconeFlame3 = gltf.scene.clone();
     const sconeFlame4 = gltf.scene.clone();
 
+
+    // instantiate animation mixers for each flame
     torchMixer = new Three.AnimationMixer(torchFlame);
     torchMixer2 = new Three.AnimationMixer(torchFlame2);
     torchMixer3 = new Three.AnimationMixer(torchFlame3);
 
+    // instantiate animation mixers for each flame
     sconeFlameMixer = new Three.AnimationMixer(sconeFlame);
     sconeFlameMixer2 = new Three.AnimationMixer(sconeFlame2);
     sconeFlameMixer3 = new Three.AnimationMixer(sconeFlame3);
     sconeFlameMixer4 = new Three.AnimationMixer(sconeFlame4);
 
+    // set flame animations
     torchMixer.clipAction(gltf.animations[0]).setDuration(1).play();
     torchMixer2.clipAction(gltf.animations[0]).setDuration(1).play();
     torchMixer3.clipAction(gltf.animations[0]).setDuration(1).play();
 
+    // set flame animations
     sconeFlameMixer.clipAction(gltf.animations[0]).setDuration(1).play();
     sconeFlameMixer2.clipAction(gltf.animations[0]).setDuration(1).play();
     sconeFlameMixer3.clipAction(gltf.animations[0]).setDuration(1).play();
     sconeFlameMixer4.clipAction(gltf.animations[0]).setDuration(1).play();
 
 
+    // torch flame positions
     torchFlame.position.set(49, 53, 79);
     torchFlame2.position.set(49, 53, -30);
     torchFlame3.position.set(-26, 53, -66);
     
-    // size if using torchFlame1
-    torchFlame.scale.set(4.5, 1.5, 4.5);
-    torchFlame2.scale.set(4.5, 1.5, 4.5);
-    torchFlame3.scale.set(4.5, 1.5, 4.5);
-
-    //sconce flame size
-    sconeFlame.scale.set(4.5, 1.5, 4.5);
-    sconeFlame2.scale.set(4.5, 1.5, 4.5);
-    sconeFlame3.scale.set(4.5, 1.5, 4.5);
-    sconeFlame4.scale.set(4.5, 1.5, 4.5);
-
     //scone flame positions
     sconeFlame.position.set(65, 63, 120);
     sconeFlame2.position.set(65, 63, -70);
     sconeFlame3.position.set(53, 63, -83);
     sconeFlame4.position.set(-90, 63, -83);
 
+
     scene.add(torchFlame, torchFlame2, torchFlame3);
-    
     scene.add(sconeFlame, sconeFlame2, sconeFlame3, sconeFlame4);
   })
 
@@ -186,9 +203,9 @@ function loadModels() {
     noticeBoard.traverse(child => {
         child.receiveShadow = true;
         child.castShadow = true;
-        if (child.isMesh) {
+
+        if (child.isMesh)
           child.material.map.anisotropy = maxAnisotropy;
-        }
     
     })
 
@@ -198,7 +215,7 @@ function loadModels() {
     noticeBoard.position.set(52, -5, 150)
     noticeBoard.rotation.set(0, -1.575, 0)
 
-    tControls.attach(noticeBoard)
+    // tControls.attach(noticeBoard)
     scene.add(noticeBoard);
   })
 
@@ -236,6 +253,14 @@ const floorMesh = new Three.Mesh(floor, floorMaterial);
 floorMesh.position.setY(-7);
 floorMesh.receiveShadow = true;
 scene.add(floorMesh)
+
+/// hotPoint Sphere
+const hotPointGeo = new Three.SphereGeometry(2, 2.5, 2.5);
+const hotPointMaterial = new Three.MeshBasicMaterial({color: 0xffffff});
+const hotPoint = new Three.Mesh(hotPointGeo, hotPointMaterial);
+hotPoint.position.set(52, 22, 177);
+// tControls.attach(hotPoint);
+scene.add(hotPoint);
 
 
 /// load Lights
@@ -356,6 +381,7 @@ function onDocumentMouseDown(e) {
   raycaster.setFromCamera(mouse, camera);
 
   // const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
+  const sphereIntersect = raycaster.intersectObject(hotPoint, true);
   const intersect = raycaster.intersectObjects(scene.children, true);
 
   // make sure model clicked on is === test object
