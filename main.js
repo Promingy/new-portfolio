@@ -36,7 +36,7 @@ camera.position.set(-250, 200, 250);
 
 // instantiate transform controls
 const tControls = new TransformControls(camera, renderer.domElement);
-tControls.setMode('translate');
+tControls.setMode('rotate');
 
 
 // set max anisotropy - improves texture quality ( we'll use this in the loader)
@@ -111,9 +111,22 @@ function loadModels() {
   // })
   loader.load('medieval_book_stack.glb', function(gltf) {
     const bookStack = gltf.scene;
-    bookStack.scale.set(1, 1, 1);
-    bookStack.position.set(0, 25, 0)
-    tControls.attach(bookStack)
+    bookStack.scale.set(.33, .33, .33);
+    bookStack.position.set(22, 23.6, 70)
+    bookStack.rotation.set(0, -2.5, 0)
+
+    bookStack.traverse(child => {
+      child.receiveShadow = true;
+      child.castShadow = true;
+
+      if (child.isMesh){
+        child.material.map.anisotropy = maxAnisotropy;
+        child.material.map.minFilter = Three.NearestFilter;
+        child.material.map.magFilter = Three.NearestFilter;
+      }
+    })
+
+    // tControls.attach(bookStack)
     scene.add(bookStack);
   })
 
@@ -224,6 +237,11 @@ function loadModels() {
     gltf.scene.scale.set(4.5, 4.5, 4.5);
     gltf.scene.position.set(-90, -5, 120)
     gltf.scene.rotation.set(0, 2.5, 0)
+
+    gltf.scene.traverse(child => {
+      child.receiveShadow = true;
+      child.castShadow = true;
+    })
     scene.add(gltf.scene)
   })
 }
