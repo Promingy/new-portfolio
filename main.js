@@ -11,7 +11,7 @@ CameraControls.install ({THREE: Three})
 // initialize animation variables
 let firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
 let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
-let panCamera = true;
+let panCamera = false;
 
 
 // instantiate scene, camera, and renderer
@@ -32,7 +32,6 @@ scene.fog = new Three.Fog(0x000000, 100, 1200);
 
 // set camera position
 camera.position.set(-250, 200, 250);
-// camera.position.set(0, 17, 200);
 
 
 // instantiate transform controls
@@ -74,7 +73,7 @@ cameraControls.enabled = true;
 function loadModels() {
 
   // load the Tavern
-  loader.load('updated_tavern.glb', function(gltf) {
+  loader.load('tavern.glb', function(gltf) {
     const tavern = gltf.scene;
 
     // set tavern properties
@@ -99,13 +98,6 @@ function loadModels() {
   })
     
     
-  // loader.load('floating_island.glb', function(island) {
-
-  //   island.scene.position.set(-15, 2, 10)
-  //   island.scene.scale.set(20, 20, 20);
-  //   scene.add(island.scene);
-  // })
-    
   // loader.load('medieval_book.glb', function(book) {
   //   book.scene.scale.set(1, 1, 1);
   //   book.scene.position.setY(10)
@@ -117,10 +109,13 @@ function loadModels() {
   //   bookshelf.scene.rotation.set(0, -0.015, 0)
   //   scene.add(bookshelf.scene);
   // })
-  // loader.load('alchemists_manual.glb', function(manual) {
-  //   manual.scene.scale.set(1000, 1000, 1000);
-  //   scene.add(manual.scene);
-  // })
+  loader.load('medieval_book_stack.glb', function(gltf) {
+    const bookStack = gltf.scene;
+    bookStack.scale.set(1, 1, 1);
+    bookStack.position.set(0, 25, 0)
+    tControls.attach(bookStack)
+    scene.add(bookStack);
+  })
 
 
   loader.load('animated_torch_flame1.glb', (gltf) => {
@@ -133,6 +128,11 @@ function loadModels() {
     // set fire properties
     fire.scale.set(13, 5, 10);
     fire.position.set(-34, 7, -70);
+
+    // fire.traverse(child => {
+    //   child.receiveShadow = true;
+    //   child.castShadow = true;
+    // });
 
     scene.add(fire);
   })
@@ -206,7 +206,6 @@ function loadModels() {
           child.material.map.anisotropy = maxAnisotropy;
           child.material.map.minFilter = Three.NearestFilter;
           child.material.map.magFilter = Three.NearestFilter;
-          console.log(child)
         }
     
     })
@@ -356,15 +355,15 @@ function animate() {
   if (sconeFlameMixer3) sconeFlameMixer3.update(1/60);
   if (sconeFlameMixer4) sconeFlameMixer4.update(1/60);
   
-  // if (tControls.dragging) {
-  //   cameraControls.enabled = false;
-  //   console.log('position', tControls.object.position);
-  //   console.log('rotation', tControls.object.rotation);
-  //   console.log('scale', tControls.object.scale);
-  // } else {
-  //   cameraControls.enabled = true;
-  // }
-  
+  if (tControls.dragging) {
+    cameraControls.enabled = false;
+    console.log('position', tControls.object.position);
+    console.log('rotation', tControls.object.rotation);
+    console.log('scale', tControls.object.scale);
+  } else {
+    cameraControls.enabled = true;
+  }
+
   if (panCamera) {
     // cameraControls.truck(-0.1);
     cameraControls.rotate(0.002, 0);
@@ -384,7 +383,6 @@ function onDocumentMouseDown(e) {
 
   const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
   const sphereIntersect = raycaster.intersectObject(hotPoint, true);
-  const intersect = raycaster.intersectObjects(scene.children, true);
 
   if (sphereIntersect.length || noticeBoardIntersect.length) {
 
@@ -395,13 +393,10 @@ function onDocumentMouseDown(e) {
     }else {
     cameraControls.enabled = false;
     panCamera = false;
-    // const position = sphereIntersect[0].object.position;
-    // const x = position.x; //52
-    // const y = position.y - 6; //16
-    // const z = position.z - 38; //139
-    // cameraControls.setLookAt(x - 12, y, z, x, y, z, true);
-    cameraControls.setLookAt(52 - 11, 16, 139, 52, 16, 139, true);
-    // console.log(x, y, z)
+    const x = 52
+    const y = 16
+    const z = 139
+    cameraControls.setLookAt(x - 11, y, z, x, y, z, true);
     }
   }
 
