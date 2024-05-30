@@ -11,7 +11,7 @@ CameraControls.install ({THREE: Three})
 // initialize animation variables
 let firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
 let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
-let panCamera = false;
+let panCamera = true;
 
 
 // instantiate scene, camera, and renderer
@@ -36,7 +36,7 @@ camera.position.set(-250, 200, 250);
 
 // instantiate transform controls
 const tControls = new TransformControls(camera, renderer.domElement);
-tControls.setMode('rotate');
+tControls.setMode('translate');
 
 
 // set max anisotropy - improves texture quality ( we'll use this in the loader)
@@ -59,11 +59,11 @@ renderer.domElement.addEventListener('click', onDocumentMouseDown);
 // set cameraControls properties
 const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
-cameraControls.maxDistance = 400;
+// cameraControls.maxDistance = 400;
 // cameraControls.maxDistance = 700;
-cameraControls.minDistance = 170;
+// cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
-cameraControls.truckSpeed = 0;
+// cameraControls.truckSpeed = 0;
 cameraControls.enabled = true;
 
 
@@ -73,7 +73,7 @@ cameraControls.enabled = true;
 function loadModels() {
 
   // load the Tavern
-  loader.load('tavern.glb', function(gltf) {
+  loader.load('test.glb', function(gltf) {
     const tavern = gltf.scene;
 
     // set tavern properties
@@ -84,6 +84,12 @@ function loadModels() {
       if (child.isMesh) {
         child.material.side = Three.FrontSide;
         // child.material.metalness = 0;
+        
+        if (child.material.map) {
+          child.material.map.anisotropy = maxAnisotropy;
+          child.material.map.minFilter = Three.NearestFilter;
+          child.material.map.magFilter = Three.NearestFilter;
+        }
 
         // filter out all of the lambert1 materials (sconces on the back of tavern)
         // and set them to receive and cast shadows
@@ -102,12 +108,6 @@ function loadModels() {
   //   book.scene.scale.set(1, 1, 1);
   //   book.scene.position.setY(10)
   //   scene.add(book.scene);
-  // })
-  // loader.load('old_bookshelf.glb', function(bookshelf) {
-  //   bookshelf.scene.scale.set(3.4, 3, 3.4);
-  //   bookshelf.scene.position.set(2, 2.6, -10.9)
-  //   bookshelf.scene.rotation.set(0, -0.015, 0)
-  //   scene.add(bookshelf.scene);
   // })
   loader.load('medieval_book_stack.glb', function(gltf) {
     const bookStack = gltf.scene;
@@ -244,6 +244,17 @@ function loadModels() {
     })
     scene.add(gltf.scene)
   })
+
+  loader.load('pile_of_books.glb', (gltf) => {
+    const books = gltf.scene;
+
+    books.scale.set(.15, .15, .15);
+    books.rotation.set(1.5, -1.5, 0);
+    books.position.set(48, 53.25, -22.5)
+
+    // tControls.attach(books);
+    scene.add(books);
+  })
 }
 
 /// Mirror
@@ -278,8 +289,12 @@ const hotPointGeo = new Three.SphereGeometry(5, 5, 5);
 const hotPointMaterial = new Three.MeshBasicMaterial({color: 0xffffff});
 const hotPoint = new Three.Mesh(hotPointGeo, hotPointMaterial);
 hotPoint.position.set(52, 22, 177);
-// tControls.attach(hotPoint);
 scene.add(hotPoint);
+
+const hotPoint2 = hotPoint.clone();
+hotPoint2.position.set(13, 35, -70);
+// tControls.attach(hotPoint2)
+scene.add(hotPoint2);
 
 
 /// load Lights
@@ -401,6 +416,8 @@ function onDocumentMouseDown(e) {
 
   const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
   const sphereIntersect = raycaster.intersectObject(hotPoint, true);
+  const sphereIntersect2 = raycaster.intersectObject(hotPoint2, true);
+  const intersect = raycaster.intersectObjects(scene.children, true);
 
   if (sphereIntersect.length || noticeBoardIntersect.length) {
 
@@ -411,12 +428,26 @@ function onDocumentMouseDown(e) {
     }else {
     cameraControls.enabled = false;
     panCamera = false;
-    const x = 52
-    const y = 16
-    const z = 139
+    const x = 52;
+    const y = 16;
+    const z = 139;
     cameraControls.setLookAt(x - 11, y, z, x, y, z, true);
     }
   }
+
+  if (sphereIntersect2.length) {
+    if (!panCamera) {
+      toggleCamera(true)
+    }else {
+      toggleCamera()
+    const x = -4;
+    const y = 36.5;
+    const z = -75.5;
+    cameraControls.setLookAt(x, y, z + 11, x, y, z, true);
+    }
+  }
+
+
 
   // make sure model clicked on is === test object
   // if (noticeBoardIntersect.length) {
@@ -435,8 +466,19 @@ function onDocumentMouseDown(e) {
     // console.log(cur)
   // }
 
-  // if (intersect.length) {
-  //   console.log(intersect[0].object);
-  // }
+  if (intersect.length) {
+    // console.log(intersect[0].object);
+    if (intersect[0].object.id === 869){
+      toggleCamera(true);
+    }
+  }
 
+}
+
+function toggleCamera(reset=false) {
+  cameraControls.enabled = !cameraControls.enabled;
+  panCamera = !panCamera;
+
+  if (reset)
+    cameraControls.setLookAt(-250, 200, 250, 0, 0, 0, true);
 }
