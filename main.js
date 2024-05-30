@@ -11,7 +11,7 @@ CameraControls.install ({THREE: Three})
 // initialize animation variables
 let firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
 let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
-let panCamera = true;
+let panCamera = false;
 
 
 // instantiate scene, camera, and renderer
@@ -52,6 +52,7 @@ const loader = new GLTFLoader().setPath('models/');
 const raycaster = new Three.Raycaster();
 const mouse = new Three.Vector2();
 renderer.domElement.addEventListener('click', onDocumentMouseDown);
+renderer.domElement.addEventListener('mousemove', onHover)
 
 
 
@@ -214,8 +215,9 @@ function loadModels() {
     noticeBoard.traverse(child => {
         child.receiveShadow = true;
         child.castShadow = true;
-
+        
         if (child.isMesh){
+          child.material.color.set(0xbcbcbc);
           child.material.map.anisotropy = maxAnisotropy;
           child.material.map.minFilter = Three.NearestFilter;
           child.material.map.magFilter = Three.NearestFilter;
@@ -473,6 +475,38 @@ function onDocumentMouseDown(e) {
     }
   }
 
+}
+
+function onHover(e) {
+  e.preventDefault();
+
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = - (e.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+
+  const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
+  const sphereIntersect = raycaster.intersectObject(hotPoint, true);
+
+  if (noticeBoardIntersect.length) {
+    noticeBoardIntersect[0].object.material.color.set(0xffffff);
+    document.body.style.cursor = 'pointer';
+  } else {
+    noticeBoard.traverse(child => {
+      if (child.isMesh) {
+        child.material.color.set(0xbcbcbc);
+      }
+    })
+    document.body.style.cursor = 'default';
+  }
+
+  if (sphereIntersect.length) {
+    hotPoint.material.color.set(0xfffb00);
+    document.body.style.cursor = 'pointer';
+  } else {
+    hotPoint.material.color.set(0xffffff);
+    document.body.style.cursor = 'defautl';
+  }
 }
 
 function toggleCamera(reset=false) {
