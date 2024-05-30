@@ -12,7 +12,7 @@ CameraControls.install ({THREE: Three})
 // initialize animation variables
 let firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
 let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
-let panCamera = false;
+let panCamera = true;
 
 
 // instantiate scene, camera, and renderer
@@ -61,11 +61,11 @@ renderer.domElement.addEventListener('mousemove', onHover)
 // set cameraControls properties
 const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
-// cameraControls.maxDistance = 400;
+cameraControls.maxDistance = 400;
 // cameraControls.maxDistance = 700;
-// cameraControls.minDistance = 170;
+cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
-// cameraControls.truckSpeed = 0;
+cameraControls.truckSpeed = 0;
 cameraControls.enabled = true;
 
 
@@ -76,6 +76,7 @@ function loadModels() {
 
   // load the Tavern
   loader.load('test.glb', function(gltf) {
+    console.log('im a test')
     const tavern = gltf.scene;
 
     // set tavern properties
@@ -436,20 +437,25 @@ function onHover(e) {
   mouse.y = - (e.clientY / window.innerHeight) * 2 + 1;
 
   raycaster.setFromCamera(mouse, camera);
-
-  const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
+  
+  let noticeBoardIntersect;
+  if (noticeBoard) {
+    noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
+  }
   const sphereIntersect = raycaster.intersectObject(hotPoint, true);
 
-  if (noticeBoardIntersect.length) {
-    noticeBoardIntersect[0].object.material.color.set(0xffffff);
-    document.body.style.cursor = 'pointer';
-    } else {
-    noticeBoard.traverse(child => {
-      if (child.isMesh) {
-        child.material.color.set(0xbcbcbc);
-      }
-    })
-    document.body.style.cursor = 'default';
+  if (noticeBoard) {
+    if (noticeBoardIntersect.length) {
+      noticeBoardIntersect[0].object.material.color.set(0xffffff);
+      document.body.style.cursor = 'pointer';
+      } else {
+      noticeBoard.traverse(child => {
+        if (child.isMesh) {
+          child.material.color.set(0xbcbcbc);
+        }
+      })
+      document.body.style.cursor = 'default';
+    }
   }
 
   if (sphereIntersect.length) {
@@ -457,7 +463,7 @@ function onHover(e) {
     document.body.style.cursor = 'pointer';
   } else {
     hotPoint.material.color.set(0xffffff);
-    document.body.style.cursor = 'defautl';
+    document.body.style.cursor = 'default';
   }
 }
 
