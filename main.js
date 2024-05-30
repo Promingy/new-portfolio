@@ -3,6 +3,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import CameraControls from 'camera-controls';
 import { Reflector } from 'three/examples/jsm/objects/Reflector';
 import { TransformControls } from 'three/examples/jsm/Addons.js';
+import loadLights from './textures/lights';
 import './style.css'
 
 CameraControls.install ({THREE: Three})
@@ -251,11 +252,14 @@ function loadModels() {
     const books = gltf.scene;
 
     books.scale.set(.15, .15, .15);
-    books.rotation.set(1.5, -1.5, 0);
-    books.position.set(48, 53.25, -22.5)
+    books.rotation.set(-1.6, -1.5, 0);
+    books.position.set(48, 51.75, -14.4)
+
+    const books2 = books.clone();
+    books2.position.setZ(-8)
 
     // tControls.attach(books);
-    scene.add(books);
+    scene.add(books, books2);
   })
 }
 
@@ -298,79 +302,13 @@ hotPoint2.position.set(13, 35, -70);
 // tControls.attach(hotPoint2)
 scene.add(hotPoint2);
 
-
-/// load Lights
-function loadLights() {
-  /// interior lights
-  const interiorWallLight = new Three.PointLight(0xF07F13, 2000);
-  interiorWallLight.castShadow = true;
-  
-  interiorWallLight.shadow.mapSize.width = 512;
-  interiorWallLight.shadow.mapSize.height = 512;
-  interiorWallLight.shadow.camera.far = 1000;
-  interiorWallLight.shadow.camera.near = 0.1;
-  
-  const interiorWallLight2 = interiorWallLight.clone();
-  const interiorWallLight3 = interiorWallLight.clone();
-  
-  interiorWallLight.position.set(44, 50, 80);
-  interiorWallLight2.position.set(44, 50, -30);
-  interiorWallLight3.position.set(-25, 50, -60);
-  
-  const firePlaceLight = new Three.PointLight( "orange", 2500, 0, 1.8);
-  firePlaceLight.position.set(-33.5, 10, -65);
-  firePlaceLight.rotateX(3.14);
-  
-  firePlaceLight.castShadow = true;
-  firePlaceLight.shadow.mapSize.width = 512;
-  firePlaceLight.shadow.mapSize.height = 512;
-  firePlaceLight.shadow.camera.far = 1000;
-  firePlaceLight.shadow.camera.near = 0.1;
+const hotPoint3 = hotPoint.clone();
+hotPoint3.position.set(48, 53, 10);
+scene.add(hotPoint3);
 
 
-
-  
-  /// Exterior Lights
-  const sconceLight = interiorWallLight.clone();
-  const sconceLight2 = interiorWallLight.clone();
-  const sconceLight3 = interiorWallLight.clone();
-  const sconceLight4 = interiorWallLight.clone();
-
-  sconceLight.decay = 1.5;
-  sconceLight2.decay = 1.5;
-  sconceLight3.decay = 1.5;
-  sconceLight4.decay = 1.5;
-  
-  sconceLight.position.set(65, 63, 120);
-  sconceLight2.position.set(65, 63, -70);
-  sconceLight3.position.set(53, 63, -83);
-  sconceLight4.position.set(-90, 63, -83)
-  
-  const streetLight1 = new Three.PointLight(0xffd21c, 3000, 0, 1.7)
-  streetLight1.castShadow = true;
-  
-  const streetLight2 = streetLight1.clone();
-  
-  streetLight1.position.set(-98.5, 80, 114);
-  streetLight2.position.set(-82.5, 80, 127);
-  
-  
-  const lightHelper = new Three.PointLightHelper(sconceLight4);
-  
-  
-  // moonLight
-  const moonLight = new Three.DirectionalLight(0x7f7f7f, .5);
-  moonLight.position.set(90, 300, -120)
-  scene.add(moonLight);
-  
-  
-  scene.add(interiorWallLight, interiorWallLight2, interiorWallLight3, firePlaceLight);
-  scene.add(sconceLight, sconceLight2, sconceLight3, sconceLight4);
-  scene.add(streetLight1, streetLight2)
-}
-
+scene.add(loadLights())
 scene.add(tControls);
-
 
 loadModels();
 loadLights();
@@ -419,6 +357,7 @@ function onDocumentMouseDown(e) {
   const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
   const sphereIntersect = raycaster.intersectObject(hotPoint, true);
   const sphereIntersect2 = raycaster.intersectObject(hotPoint2, true);
+  const sphereIntersect3 = raycaster.intersectObject(hotPoint3, true);
   const intersect = raycaster.intersectObjects(scene.children, true);
 
   if (sphereIntersect.length || noticeBoardIntersect.length) {
@@ -449,6 +388,18 @@ function onDocumentMouseDown(e) {
     }
   }
 
+  if (sphereIntersect3.length) {
+    if (!panCamera) {
+      toggleCamera(true)
+    }else {
+      toggleCamera()
+    const x = 48;
+    const y = 47;
+    const z = -17;
+    cameraControls.setLookAt(x - 4, y, z, x, y, z, true);
+    }
+  }
+
 
 
   // make sure model clicked on is === test object
@@ -469,8 +420,9 @@ function onDocumentMouseDown(e) {
   // }
 
   if (intersect.length) {
-    // console.log(intersect[0].object);
-    if (intersect[0].object.id === 869){
+    console.log(intersect[0].object);
+    const id = intersect[0].object.id;
+    if (id === 930 || id === 899 || id === 876 || id === 588){
       toggleCamera(true);
     }
   }
