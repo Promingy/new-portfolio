@@ -491,7 +491,7 @@ function onHover(e) {
   if (noticeBoardIntersect.length) {
     noticeBoardIntersect[0].object.material.color.set(0xffffff);
     document.body.style.cursor = 'pointer';
-  } else {
+    } else {
     noticeBoard.traverse(child => {
       if (child.isMesh) {
         child.material.color.set(0xbcbcbc);
