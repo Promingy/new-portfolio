@@ -133,134 +133,134 @@ function loadModels() {
   // })
 
 
-  // loader.load('animated_torch_flame1.glb', (gltf) => {
-  //   const fire = gltf.scene
-  //   firePlaceMixer = new Three.AnimationMixer(fire);
+  loader.load('animated_torch_flame1.glb', (gltf) => {
+    const fire = gltf.scene
+    firePlaceMixer = new Three.AnimationMixer(fire);
     
-  //   // set fire animation
-  //   firePlaceMixer.clipAction(gltf.animations[0]).setDuration(1).play();
+    // set fire animation
+    firePlaceMixer.clipAction(gltf.animations[0]).setDuration(1).play();
 
-  //   // set fire properties
-  //   fire.scale.set(13, 5, 10);
-  //   fire.position.set(-34, 7, -70);
+    // set fire properties
+    fire.scale.set(13, 5, 10);
+    fire.position.set(-34, 7, -70);
 
-  //   // fire.traverse(child => {
-  //   //   child.receiveShadow = true;
-  //   //   child.castShadow = true;
-  //   // });
+    // fire.traverse(child => {
+    //   child.receiveShadow = true;
+    //   child.castShadow = true;
+    // });
 
-  //   scene.add(fire);
-  // })
+    scene.add(fire);
+  })
 
-  // loader.load('animated_torch_flame1.glb', (gltf) => {
-  //   // torch flames
-  //   const torchFlame = gltf.scene;
-  //   torchFlame.scale.set(4.5, 1.5, 4.5);
+  loader.load('animated_torch_flame1.glb', (gltf) => {
+    // torch flames
+    const torchFlame = gltf.scene;
+    torchFlame.scale.set(4.5, 1.5, 4.5);
 
 
-  //   const torchFlame2 = gltf.scene.clone();
-  //   const torchFlame3 = gltf.scene.clone();
+    const torchFlame2 = gltf.scene.clone();
+    const torchFlame3 = gltf.scene.clone();
 
-  //   //sconce flames
-  //   const sconeFlame = gltf.scene.clone();
-  //   sconeFlame.scale.set(4.5, 1.5, 4.5);
+    //sconce flames
+    const sconeFlame = gltf.scene.clone();
+    sconeFlame.scale.set(4.5, 1.5, 4.5);
 
   
-  //   const sconeFlame2 = gltf.scene.clone();
-  //   const sconeFlame3 = gltf.scene.clone();
-  //   const sconeFlame4 = gltf.scene.clone();
+    const sconeFlame2 = gltf.scene.clone();
+    const sconeFlame3 = gltf.scene.clone();
+    const sconeFlame4 = gltf.scene.clone();
 
 
-  //   // instantiate animation mixers for each flame
-  //   torchMixer = new Three.AnimationMixer(torchFlame);
-  //   torchMixer2 = new Three.AnimationMixer(torchFlame2);
-  //   torchMixer3 = new Three.AnimationMixer(torchFlame3);
+    // instantiate animation mixers for each flame
+    torchMixer = new Three.AnimationMixer(torchFlame);
+    torchMixer2 = new Three.AnimationMixer(torchFlame2);
+    torchMixer3 = new Three.AnimationMixer(torchFlame3);
 
-  //   // instantiate animation mixers for each flame
-  //   sconeFlameMixer = new Three.AnimationMixer(sconeFlame);
-  //   sconeFlameMixer2 = new Three.AnimationMixer(sconeFlame2);
-  //   sconeFlameMixer3 = new Three.AnimationMixer(sconeFlame3);
-  //   sconeFlameMixer4 = new Three.AnimationMixer(sconeFlame4);
+    // instantiate animation mixers for each flame
+    sconeFlameMixer = new Three.AnimationMixer(sconeFlame);
+    sconeFlameMixer2 = new Three.AnimationMixer(sconeFlame2);
+    sconeFlameMixer3 = new Three.AnimationMixer(sconeFlame3);
+    sconeFlameMixer4 = new Three.AnimationMixer(sconeFlame4);
 
-  //   // set flame animations
-  //   torchMixer.clipAction(gltf.animations[0]).setDuration(1).play();
-  //   torchMixer2.clipAction(gltf.animations[0]).setDuration(1).play();
-  //   torchMixer3.clipAction(gltf.animations[0]).setDuration(1).play();
+    // set flame animations
+    torchMixer.clipAction(gltf.animations[0]).setDuration(1).play();
+    torchMixer2.clipAction(gltf.animations[0]).setDuration(1).play();
+    torchMixer3.clipAction(gltf.animations[0]).setDuration(1).play();
 
-  //   // set flame animations
-  //   sconeFlameMixer.clipAction(gltf.animations[0]).setDuration(1).play();
-  //   sconeFlameMixer2.clipAction(gltf.animations[0]).setDuration(1).play();
-  //   sconeFlameMixer3.clipAction(gltf.animations[0]).setDuration(1).play();
-  //   sconeFlameMixer4.clipAction(gltf.animations[0]).setDuration(1).play();
+    // set flame animations
+    sconeFlameMixer.clipAction(gltf.animations[0]).setDuration(1).play();
+    sconeFlameMixer2.clipAction(gltf.animations[0]).setDuration(1).play();
+    sconeFlameMixer3.clipAction(gltf.animations[0]).setDuration(1).play();
+    sconeFlameMixer4.clipAction(gltf.animations[0]).setDuration(1).play();
 
 
-  //   // torch flame positions
-  //   torchFlame.position.set(49, 53, 79);
-  //   torchFlame2.position.set(49, 53, -30);
-  //   torchFlame3.position.set(-26, 53, -66);
+    // torch flame positions
+    torchFlame.position.set(49, 53, 79);
+    torchFlame2.position.set(49, 53, -30);
+    torchFlame3.position.set(-26, 53, -66);
     
-  //   //scone flame positions
-  //   sconeFlame.position.set(65, 63, 120);
-  //   sconeFlame2.position.set(65, 63, -70);
-  //   sconeFlame3.position.set(53, 63, -83);
-  //   sconeFlame4.position.set(-90, 63, -83);
+    //scone flame positions
+    sconeFlame.position.set(65, 63, 120);
+    sconeFlame2.position.set(65, 63, -70);
+    sconeFlame3.position.set(53, 63, -83);
+    sconeFlame4.position.set(-90, 63, -83);
 
 
-  //   scene.add(torchFlame, torchFlame2, torchFlame3);
-  //   scene.add(sconeFlame, sconeFlame2, sconeFlame3, sconeFlame4);
-  // })
+    scene.add(torchFlame, torchFlame2, torchFlame3);
+    scene.add(sconeFlame, sconeFlame2, sconeFlame3, sconeFlame4);
+  })
 
-  // loader.load('bounty_board_w_resume.glb', (gltf) => {
-  //   noticeBoard = gltf.scene;
+  loader.load('bounty_board_w_resume.glb', (gltf) => {
+    noticeBoard = gltf.scene;
 
-  //   noticeBoard.traverse(child => {
-  //       child.receiveShadow = true;
-  //       child.castShadow = true;
+    noticeBoard.traverse(child => {
+        child.receiveShadow = true;
+        child.castShadow = true;
         
-  //       if (child.isMesh){
-  //         child.material.color.set(0xbcbcbc);
-  //         child.material.map.anisotropy = maxAnisotropy;
-  //         child.material.map.minFilter = Three.NearestFilter;
-  //         child.material.map.magFilter = Three.NearestFilter;
-  //       }
+        if (child.isMesh){
+          child.material.color.set(0xbcbcbc);
+          child.material.map.anisotropy = maxAnisotropy;
+          child.material.map.minFilter = Three.NearestFilter;
+          child.material.map.magFilter = Three.NearestFilter;
+        }
     
-  //   })
+    })
 
 
-  //   noticeBoard.scale.set(10, 10, 10)
-  //   // noticeBoard.position.set(-130, -5, -70)
-  //   noticeBoard.position.set(52, -5, 150)
-  //   noticeBoard.rotation.set(0, -1.575, 0)
+    noticeBoard.scale.set(10, 10, 10)
+    // noticeBoard.position.set(-130, -5, -70)
+    noticeBoard.position.set(52, -5, 150)
+    noticeBoard.rotation.set(0, -1.575, 0)
 
-  //   // tControls.attach(noticeBoard)
-  //   scene.add(noticeBoard);
-  // })
+    // tControls.attach(noticeBoard)
+    scene.add(noticeBoard);
+  })
 
-  // loader.load('lightpost.glb', (gltf) => {
-  //   gltf.scene.scale.set(4.5, 4.5, 4.5);
-  //   gltf.scene.position.set(-90, -5, 120)
-  //   gltf.scene.rotation.set(0, 2.5, 0)
+  loader.load('lightpost.glb', (gltf) => {
+    gltf.scene.scale.set(4.5, 4.5, 4.5);
+    gltf.scene.position.set(-90, -5, 120)
+    gltf.scene.rotation.set(0, 2.5, 0)
 
-  //   gltf.scene.traverse(child => {
-  //     child.receiveShadow = true;
-  //     child.castShadow = true;
-  //   })
-  //   scene.add(gltf.scene)
-  // })
+    gltf.scene.traverse(child => {
+      child.receiveShadow = true;
+      child.castShadow = true;
+    })
+    scene.add(gltf.scene)
+  })
 
-  // loader.load('pile_of_books.glb', (gltf) => {
-  //   const books = gltf.scene;
+  loader.load('pile_of_books.glb', (gltf) => {
+    const books = gltf.scene;
 
-  //   books.scale.set(.15, .15, .15);
-  //   books.rotation.set(-1.6, -1.5, 0);
-  //   books.position.set(48, 51.75, -14.4)
+    books.scale.set(.15, .15, .15);
+    books.rotation.set(-1.6, -1.5, 0);
+    books.position.set(48, 51.75, -14.4)
 
-  //   const books2 = books.clone();
-  //   books2.position.setZ(-8)
+    const books2 = books.clone();
+    books2.position.setZ(-8)
 
-  //   // tControls.attach(books);
-  //   scene.add(books, books2);
-  // })
+    // tControls.attach(books);
+    scene.add(books, books2);
+  })
 }
 
 /// Mirror
