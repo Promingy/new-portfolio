@@ -45,8 +45,8 @@ const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
 
 // instantiate GLTFLoader - used to load 3D models - one linked to AWS the other for local files
-const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
-// const loader = new GLTFLoader().setPath('models/');
+// const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
+const loader = new GLTFLoader().setPath('models/');
 
 
 // instantiate raycaster and mouse - to detect user clicks and move the camera to hotpoints
@@ -210,7 +210,7 @@ function loadModels() {
     scene.add(sconeFlame, sconeFlame2, sconeFlame3, sconeFlame4);
   })
 
-  loader.load('bounty_board_w_resume.glb', (gltf) => {
+  loader.load('test_board.glb', (gltf) => {
     noticeBoard = gltf.scene;
 
     noticeBoard.traverse(child => {
@@ -255,11 +255,17 @@ function loadModels() {
     books.rotation.set(-1.6, -1.5, 0);
     books.position.set(48, 51.75, -14.4)
 
-    const books2 = books.clone();
-    books2.position.setZ(-8)
+    scene.add(books);
+  })
 
-    // tControls.attach(books);
-    scene.add(books, books2);
+  loader.load('second_pile_of_books.glb', (gltf) => {
+    const books = gltf.scene;
+
+    books.scale.set(.15, .15, .15);
+    books.rotation.set(-1.6, -1.5, 0);
+    books.position.set(48, 51.75, -8);
+
+    scene.add(books);
   })
 }
 
@@ -328,14 +334,14 @@ function animate() {
   if (sconeFlameMixer3) sconeFlameMixer3.update(1/60);
   if (sconeFlameMixer4) sconeFlameMixer4.update(1/60);
   
-  if (tControls.dragging) {
-    cameraControls.enabled = false;
-    console.log('position', tControls.object.position);
-    console.log('rotation', tControls.object.rotation);
-    console.log('scale', tControls.object.scale);
-  } else {
-    cameraControls.enabled = true;
-  }
+  // if (tControls.dragging) {
+  //   cameraControls.enabled = false;
+  //   console.log('position', tControls.object.position);
+  //   console.log('rotation', tControls.object.rotation);
+  //   console.log('scale', tControls.object.scale);
+  // } else {
+  //   cameraControls.enabled = true;
+  // }
 
   if (panCamera) {
     // cameraControls.truck(-0.1);
@@ -395,7 +401,7 @@ function onDocumentMouseDown(e) {
       toggleCamera()
     const x = 48;
     const y = 47;
-    const z = -17;
+    const z = -15;
     cameraControls.setLookAt(x - 4, y, z, x, y, z, true);
     }
   }
