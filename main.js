@@ -10,8 +10,9 @@ CameraControls.install ({THREE: Three})
 
 
 // initialize animation variables
-let firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard, resumeSign;
+let firePlaceMixer, torchMixer, torchMixer2, torchMixer3;
 let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
+let noticeBoard, resumeSign, pileOfBooks, secondPileOfBooks;
 let panCamera = true;
 
 
@@ -264,23 +265,23 @@ function loadModels() {
   })
 
   loader.load('pile_of_books.glb', (gltf) => {
-    const books = gltf.scene;
+    pileOfBooks = gltf.scene;
 
-    books.scale.set(.15, .15, .15);
-    books.rotation.set(-1.6, -1.5, 0);
-    books.position.set(48, 51.75, -14.4)
+    pileOfBooks.scale.set(.15, .15, .15);
+    pileOfBooks.rotation.set(-1.6, -1.5, 0);
+    pileOfBooks.position.set(48, 51.75, -14.4)
 
-    scene.add(books);
+    scene.add(pileOfBooks);
   })
 
   loader.load('second_pile_of_books.glb', (gltf) => {
-    const books = gltf.scene;
+    secondPileOfBooks = gltf.scene;
 
-    books.scale.set(.15, .15, .15);
-    books.rotation.set(-1.6, -1.5, 0);
-    books.position.set(48, 51.75, -8);
+    secondPileOfBooks.scale.set(.15, .15, .15);
+    secondPileOfBooks.rotation.set(-1.6, -1.5, 0);
+    secondPileOfBooks.position.set(48, 51.75, -8);
 
-    scene.add(books);
+    scene.add(secondPileOfBooks);
   })
 }
 
@@ -316,7 +317,6 @@ const hotPointGeo = new Three.SphereGeometry(5, 5, 5);
 const hotPointMaterial = new Three.MeshBasicMaterial({color: 0xffffff});
 const hotPoint = new Three.Mesh(hotPointGeo, hotPointMaterial);
 hotPoint.position.set(52, 22, 177);
-scene.add(hotPoint);
 
 const hotPoint2 = hotPoint.clone();
 hotPoint2.position.set(13, 35, -70);
@@ -377,27 +377,30 @@ function onDocumentMouseDown(e) {
   raycaster.setFromCamera(mouse, camera);
 
   const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true); 
-  const resumeSignIntersect = raycaster.intersectObject(resumeSign, true)
-  const sphereIntersect = raycaster.intersectObject(hotPoint, true);
+  const resumeSignIntersect = raycaster.intersectObject(resumeSign, true);
+  const pileOfBooksIntersect = raycaster.intersectObject(pileOfBooks, true);
+  const secondPileOfBooksIntersect = raycaster.intersectObject(secondPileOfBooks, true);
   const sphereIntersect2 = raycaster.intersectObject(hotPoint2, true);
   const sphereIntersect3 = raycaster.intersectObject(hotPoint3, true);
   const intersect = raycaster.intersectObjects(scene.children, true);
 
-  if (sphereIntersect.length || noticeBoardIntersect.length || resumeSignIntersect.length) {
+  if (noticeBoardIntersect.length || resumeSignIntersect.length) {
 
     if (!panCamera) {
       cameraControls.enabled = true;
       panCamera = true;
       cameraControls.setLookAt(-250, 200, 250, 0, 0, 0, true);
     }else {
-    cameraControls.enabled = false;
-    panCamera = false;
-    const x = 52;
-    const y = 16;
-    const z = 139;
-    cameraControls.setLookAt(x - 11, y, z, x, y, z, true);
+      cameraControls.enabled = false;
+      panCamera = false;
+      const x = 52;
+      const y = 16;
+      const z = 139;
+      cameraControls.setLookAt(x - 11, y, z, x, y, z, true);
     }
   }
+
+      
 
   if (sphereIntersect2.length) {
     if (!panCamera) {
@@ -411,7 +414,7 @@ function onDocumentMouseDown(e) {
     }
   }
 
-  if (sphereIntersect3.length) {
+  if (sphereIntersect3.length || pileOfBooksIntersect.length || secondPileOfBooksIntersect.length) {
     if (!panCamera) {
       toggleCamera(true)
     }else {
@@ -444,8 +447,8 @@ function onDocumentMouseDown(e) {
 
   if (intersect.length) {
     console.log(intersect[0].object);
-    const id = intersect[0].object.id;
-    if (id === 930 || id === 899 || id === 876 || id === 588){
+    const name = intersect[0].object.name;
+    if (name === "Cartaz_2_cartaz_Espelho_0001"){
       toggleCamera(true);
     }
   }
@@ -459,18 +462,24 @@ function onHover(e) {
   mouse.y = - (e.clientY / window.innerHeight) * 2 + 1;
 
   raycaster.setFromCamera(mouse, camera);
-  
-  let noticeBoardIntersect = noticeBoard && raycaster.intersectObject(noticeBoard, true);
+
+  const intersects = [];
+
+  let noticeBoardIntersect = noticeBoard && raycaster.intersectObject(noticeBoard, true); 
   let resumeSignIntersect = resumeSign && raycaster.intersectObject(resumeSign, true);
+  let pileOfBooksIntersect = pileOfBooks && raycaster.intersectObject(pileOfBooks, true);
+  let secondPileOfBooksIntersect = secondPileOfBooks && raycaster.intersectObject(secondPileOfBooks, true);
+
+  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks) return;
+
+  intersects.push(...noticeBoardIntersect, ...resumeSignIntersect, ...pileOfBooksIntersect, ...secondPileOfBooksIntersect);
 
 
-  if (noticeBoard && resumeSign) {
-    if (noticeBoardIntersect.length || resumeSignIntersect.length) {
-      document.body.style.cursor = 'pointer';
-      } else {
-      document.body.style.cursor = 'default';
-    }
-  }
+  if (intersects.length)
+    document.body.style.cursor = 'pointer';
+  else 
+    document.body.style.cursor = 'default'
+  
 }
 
 function toggleCamera(reset=false) {
