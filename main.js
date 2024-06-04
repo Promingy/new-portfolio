@@ -68,12 +68,15 @@ cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
 cameraControls.truckSpeed = 0;
 cameraControls.enabled = true;
+cameraControls.smoothTime = .75;
 cameraControls.addEventListener('control', () => {
   if (cameraControls.currentAction) {
     panCamera = false;
     clearTimeout(timeout);
     timeout = setTimeout(toggleCamera, 5000)
+    return;
   }
+  clearTimeout(timeout);
 })
 
 
@@ -370,7 +373,6 @@ function animate() {
   // }
 
   if (panCamera) {
-    // cameraControls.truck(-0.1);
     cameraControls.rotate(0.002, 0);
   }
   
@@ -406,24 +408,6 @@ function onDocumentMouseDown(e) {
     foo(44, 47, -15, 48, 47, -15)
   }
 
-
-
-  // make sure model clicked on is === test object
-  // if (noticeBoardIntersect.length) {
-  //   if (!panCamera) {
-  //     panCamera = true;
-  //     cameraControls.enabled = true;
-  //     cameraControls.setLookAt(-250, 200, 250, 0, 0, 0, true);
-  //   }
-
-    // recurse and get the root parent
-    // let cur = noticeBoardIntersect[0].object;
-
-    // while(cur.parent.type !== 'Scene')
-    //   cur = cur.parent;
-
-    // console.log(cur)
-  // }
 
   if (intersect.length) {
     console.log(intersect[0].object);
@@ -465,20 +449,22 @@ function onHover(e) {
   
 }
 
-function toggleCamera(reset=true) {
-  cameraControls.enabled = !reset;
-  panCamera = !reset;
+function toggleCamera(reset = true) {
+  cameraControls.enabled = false;
+  panCamera = false;
 
-  if (reset)
-    cameraControls.smoothTime = 1;
-    cameraControls.setLookAt(-200, 175, 200, 0, 0, 0, true);
+  if (reset){
+    cameraControls.enabled = true;
+    cameraControls.setLookAt(-200, 175, 200, 0, 0, 0, true)
+      .then(() => panCamera = true)
+  }
 }
 
 function foo(x, y, z, tx, ty, tz) {
   const target = cameraControls.getTarget();
-  toggleCamera()
+  toggleCamera(false)
   if (target.x == tx && target.y == ty && target.z == tz) 
-    toggleCamera(true)
+    toggleCamera()
   else
     cameraControls.setLookAt(x, y, z, tx, ty, tz, true);
 }
