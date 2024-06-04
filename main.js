@@ -12,7 +12,7 @@ CameraControls.install ({THREE: Three})
 // initialize animation variables
 let firePlaceMixer, torchMixer, torchMixer2, torchMixer3;
 let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
-let noticeBoard, resumeSign, pileOfBooks, secondPileOfBooks;
+let noticeBoard, resumeSign, pileOfBooks, secondPileOfBooks, timeout;
 let panCamera = true;
 
 
@@ -62,12 +62,19 @@ renderer.domElement.addEventListener('mousemove', onHover)
 // set cameraControls properties
 const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
-cameraControls.maxDistance = 400;
+cameraControls.maxDistance = 200;
 // cameraControls.maxDistance = 700;
 cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
 cameraControls.truckSpeed = 0;
 cameraControls.enabled = true;
+cameraControls.addEventListener('control', () => {
+  if (cameraControls.currentAction) {
+    panCamera = false;
+    clearTimeout(timeout);
+    timeout = setTimeout(toggleCamera, 5000)
+  }
+})
 
 
 
@@ -349,15 +356,18 @@ function animate() {
   if (sconeFlameMixer3) sconeFlameMixer3.update(1/60);
   if (sconeFlameMixer4) sconeFlameMixer4.update(1/60);
   
-  if (tControls.dragging) {
-    cameraControls.enabled = false;
-    panCamera = false;
-    console.log('position', tControls.object.position);
-    console.log('rotation', tControls.object.rotation);
-    console.log('scale', tControls.object.scale);
-  } else {
-    cameraControls.enabled = true;
-  }
+
+  // if (!panCamera && !timeout) {
+  //   timeout = setTimeout(() => {
+  //     toggleCamera(true)
+  //   }, 1000)
+  // }
+  //   console.log('position', tControls.object.position);
+  //   console.log('rotation', tControls.object.rotation);
+  //   console.log('scale', tControls.object.scale);
+  // } else {
+  //   cameraControls.enabled = true;
+  // }
 
   if (panCamera) {
     // cameraControls.truck(-0.1);
@@ -385,45 +395,15 @@ function onDocumentMouseDown(e) {
   const intersect = raycaster.intersectObjects(scene.children, true);
 
   if (noticeBoardIntersect.length || resumeSignIntersect.length) {
-
-    if (!panCamera) {
-      cameraControls.enabled = true;
-      panCamera = true;
-      cameraControls.setLookAt(-250, 200, 250, 0, 0, 0, true);
-    }else {
-      cameraControls.enabled = false;
-      panCamera = false;
-      const x = 52;
-      const y = 16;
-      const z = 139;
-      cameraControls.setLookAt(x - 11, y, z, x, y, z, true);
-    }
+      foo(41, 16, 139, 52, 16, 139)
   }
 
-      
-
   if (sphereIntersect2.length) {
-    if (!panCamera) {
-      toggleCamera(true)
-    }else {
-      toggleCamera()
-    const x = -4;
-    const y = 36.5;
-    const z = -75.5;
-    cameraControls.setLookAt(x, y, z + 11, x, y, z, true);
-    }
+    foo(-4, 36.5, -64.5, -4, 36.5, -75.5)
   }
 
   if (sphereIntersect3.length || pileOfBooksIntersect.length || secondPileOfBooksIntersect.length) {
-    if (!panCamera) {
-      toggleCamera(true)
-    }else {
-      toggleCamera()
-    const x = 48;
-    const y = 47;
-    const z = -15;
-    cameraControls.setLookAt(x - 4, y, z, x, y, z, true);
-    }
+    foo(44, 47, -15, 48, 47, -15)
   }
 
 
@@ -449,7 +429,7 @@ function onDocumentMouseDown(e) {
     console.log(intersect[0].object);
     const name = intersect[0].object.name;
     if (name === "Cartaz_2_cartaz_Espelho_0001"){
-      toggleCamera(true);
+      toggleCamera();
     }
   }
 
@@ -469,23 +449,37 @@ function onHover(e) {
   let resumeSignIntersect = resumeSign && raycaster.intersectObject(resumeSign, true);
   let pileOfBooksIntersect = pileOfBooks && raycaster.intersectObject(pileOfBooks, true);
   let secondPileOfBooksIntersect = secondPileOfBooks && raycaster.intersectObject(secondPileOfBooks, true);
+  const intersect = raycaster.intersectObjects(scene.children, true);
+  const intersectName = intersect.length && intersect[0].object.name;
+
 
   if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks) return;
 
   intersects.push(...noticeBoardIntersect, ...resumeSignIntersect, ...pileOfBooksIntersect, ...secondPileOfBooksIntersect);
 
 
-  if (intersects.length)
+  if (intersects.length || intersectName === "Cartaz_2_cartaz_Espelho_0001")
     document.body.style.cursor = 'pointer';
   else 
     document.body.style.cursor = 'default'
   
 }
 
-function toggleCamera(reset=false) {
-  // cameraControls.enabled = !cameraControls.enabled;
-  panCamera = !panCamera;
+function toggleCamera(reset=true) {
+  cameraControls.enabled = !reset;
+  panCamera = !reset;
 
   if (reset)
-    cameraControls.setLookAt(-250, 200, 250, 0, 0, 0, true);
+    cameraControls.smoothTime = 1;
+    cameraControls.setLookAt(-200, 175, 200, 0, 0, 0, true);
 }
+
+function foo(x, y, z, tx, ty, tz) {
+  const target = cameraControls.getTarget();
+  toggleCamera()
+  if (target.x == tx && target.y == ty && target.z == tz) 
+    toggleCamera(true)
+  else
+    cameraControls.setLookAt(x, y, z, tx, ty, tz, true);
+}
+
