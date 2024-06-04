@@ -10,7 +10,7 @@ CameraControls.install ({THREE: Three})
 
 
 // initialize animation variables
-let firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard;
+let firePlaceMixer, torchMixer, torchMixer2, torchMixer3, noticeBoard, resumeSign;
 let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
 let panCamera = true;
 
@@ -32,7 +32,7 @@ scene.fog = new Three.Fog(0x000000, 100, 1200);
 
 
 // set camera position
-camera.position.set(-250, 200, 250);
+camera.position.set(-200, 175, 200);
 
 
 // instantiate transform controls
@@ -104,6 +104,21 @@ function loadModels() {
 
     scene.add(tavern);
   })
+
+  loader.load('resume_sign.glb', function(gltf) {
+    resumeSign = gltf.scene
+    resumeSign.position.set(54, 40, 145)
+    resumeSign.rotation.set(0, 1.575, 0)
+    resumeSign.scale.set(10, 10, 10)
+
+    resumeSign.traverse(child => {
+      child.receiveShadow = true;
+      child.castShadow = true;
+    })
+
+    // tControls.attach(sign)
+    scene.add(resumeSign)
+  })
     
     
   // loader.load('medieval_book.glb', function(book) {
@@ -111,26 +126,26 @@ function loadModels() {
   //   book.scene.position.setY(10)
   //   scene.add(book.scene);
   // })
-  // loader.load('medieval_book_stack.glb', function(gltf) {
-  //   const bookStack = gltf.scene;
-  //   bookStack.scale.set(.33, .33, .33);
-  //   bookStack.position.set(22, 23.6, 70)
-  //   bookStack.rotation.set(0, -2.5, 0)
+  loader.load('medieval_book_stack.glb', function(gltf) {
+    const bookStack = gltf.scene;
+    bookStack.scale.set(.33, .33, .33);
+    bookStack.position.set(22, 23.6, 70)
+    bookStack.rotation.set(0, -2.5, 0)
 
-  //   bookStack.traverse(child => {
-  //     child.receiveShadow = true;
-  //     child.castShadow = true;
+    bookStack.traverse(child => {
+      child.receiveShadow = true;
+      child.castShadow = true;
 
-  //     if (child.isMesh){
-  //       child.material.map.anisotropy = maxAnisotropy;
-  //       child.material.map.minFilter = Three.NearestFilter;
-  //       child.material.map.magFilter = Three.NearestFilter;
-  //     }
-  //   })
+      if (child.isMesh){
+        child.material.map.anisotropy = maxAnisotropy;
+        child.material.map.minFilter = Three.NearestFilter;
+        child.material.map.magFilter = Three.NearestFilter;
+      }
+    })
 
-  //   // tControls.attach(bookStack)
-  //   scene.add(bookStack);
-  // })
+    // tControls.attach(bookStack)
+    scene.add(bookStack);
+  })
 
 
   loader.load('animated_torch_flame1.glb', (gltf) => {
@@ -334,14 +349,15 @@ function animate() {
   if (sconeFlameMixer3) sconeFlameMixer3.update(1/60);
   if (sconeFlameMixer4) sconeFlameMixer4.update(1/60);
   
-  // if (tControls.dragging) {
-  //   cameraControls.enabled = false;
-  //   console.log('position', tControls.object.position);
-  //   console.log('rotation', tControls.object.rotation);
-  //   console.log('scale', tControls.object.scale);
-  // } else {
-  //   cameraControls.enabled = true;
-  // }
+  if (tControls.dragging) {
+    cameraControls.enabled = false;
+    panCamera = false;
+    console.log('position', tControls.object.position);
+    console.log('rotation', tControls.object.rotation);
+    console.log('scale', tControls.object.scale);
+  } else {
+    cameraControls.enabled = true;
+  }
 
   if (panCamera) {
     // cameraControls.truck(-0.1);
@@ -360,13 +376,14 @@ function onDocumentMouseDown(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
+  const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true); 
+  const resumeSignIntersect = raycaster.intersectObject(resumeSign, true)
   const sphereIntersect = raycaster.intersectObject(hotPoint, true);
   const sphereIntersect2 = raycaster.intersectObject(hotPoint2, true);
   const sphereIntersect3 = raycaster.intersectObject(hotPoint3, true);
   const intersect = raycaster.intersectObjects(scene.children, true);
 
-  if (sphereIntersect.length || noticeBoardIntersect.length) {
+  if (sphereIntersect.length || noticeBoardIntersect.length || resumeSignIntersect.length) {
 
     if (!panCamera) {
       cameraControls.enabled = true;
@@ -443,37 +460,21 @@ function onHover(e) {
 
   raycaster.setFromCamera(mouse, camera);
   
-  let noticeBoardIntersect;
-  if (noticeBoard) {
-    noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true);
-  }
-  const sphereIntersect = raycaster.intersectObject(hotPoint, true);
+  let noticeBoardIntersect = noticeBoard && raycaster.intersectObject(noticeBoard, true);
+  let resumeSignIntersect = resumeSign && raycaster.intersectObject(resumeSign, true);
 
-  if (noticeBoard) {
-    if (noticeBoardIntersect.length) {
-      noticeBoardIntersect[0].object.material.color.set(0xffffff);
+
+  if (noticeBoard && resumeSign) {
+    if (noticeBoardIntersect.length || resumeSignIntersect.length) {
       document.body.style.cursor = 'pointer';
       } else {
-      noticeBoard.traverse(child => {
-        if (child.isMesh) {
-          child.material.color.set(0xbcbcbc);
-        }
-      })
       document.body.style.cursor = 'default';
     }
-  }
-
-  if (sphereIntersect.length) {
-    hotPoint.material.color.set(0xfffb00);
-    document.body.style.cursor = 'pointer';
-  } else {
-    hotPoint.material.color.set(0xffffff);
-    document.body.style.cursor = 'default';
   }
 }
 
 function toggleCamera(reset=false) {
-  cameraControls.enabled = !cameraControls.enabled;
+  // cameraControls.enabled = !cameraControls.enabled;
   panCamera = !panCamera;
 
   if (reset)
