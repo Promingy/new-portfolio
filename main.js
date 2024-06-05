@@ -5,13 +5,13 @@ import { Reflector } from 'three/examples/jsm/objects/Reflector';
 import { TransformControls } from 'three/examples/jsm/Addons.js';
 import loadLights from './textures/lights';
 import './style.css'
+import { texture } from 'three/examples/jsm/nodes/Nodes.js';
 
 CameraControls.install ({THREE: Three})
 
 
 // initialize animation variables
-let firePlaceMixer, torchMixer, torchMixer2, torchMixer3;
-let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
+let firePlaceMixer, torchMixer;
 let tavern, noticeBoard, resumeSign, pileOfBooks, secondPileOfBooks, timeout;
 let panCamera = true;
 
@@ -68,7 +68,7 @@ cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
 cameraControls.truckSpeed = 0;
 cameraControls.enabled = true;
-cameraControls.smoothTime = .75;
+cameraControls.smoothTime = .5;
 cameraControls.addEventListener('control', () => {
   if (cameraControls.currentAction) {
     panCamera = false;
@@ -179,45 +179,28 @@ function loadModels() {
   })
 
   loader.load('animated_torch_flame1.glb', (gltf) => {
+    
+    gltf.scene.scale.set(4.5, 1.5, 4.5);
+    
     // torch flames
     const torchFlame = gltf.scene;
-    torchFlame.scale.set(4.5, 1.5, 4.5);
-
-
     const torchFlame2 = gltf.scene.clone();
     const torchFlame3 = gltf.scene.clone();
-
+    
     //sconce flames
     const sconeFlame = gltf.scene.clone();
-    sconeFlame.scale.set(4.5, 1.5, 4.5);
-
-  
     const sconeFlame2 = gltf.scene.clone();
     const sconeFlame3 = gltf.scene.clone();
     const sconeFlame4 = gltf.scene.clone();
+    
+    
+    let flameAnimations = new Three.AnimationObjectGroup;
+    flameAnimations.add(torchFlame, torchFlame2, torchFlame3);
+    flameAnimations.add(sconeFlame, sconeFlame2, sconeFlame3, sconeFlame4);
 
 
-    // instantiate animation mixers for each flame
-    torchMixer = new Three.AnimationMixer(torchFlame);
-    torchMixer2 = new Three.AnimationMixer(torchFlame2);
-    torchMixer3 = new Three.AnimationMixer(torchFlame3);
-
-    // instantiate animation mixers for each flame
-    sconeFlameMixer = new Three.AnimationMixer(sconeFlame);
-    sconeFlameMixer2 = new Three.AnimationMixer(sconeFlame2);
-    sconeFlameMixer3 = new Three.AnimationMixer(sconeFlame3);
-    sconeFlameMixer4 = new Three.AnimationMixer(sconeFlame4);
-
-    // set flame animations
+    torchMixer = new Three.AnimationMixer(flameAnimations);
     torchMixer.clipAction(gltf.animations[0]).setDuration(1).play();
-    torchMixer2.clipAction(gltf.animations[0]).setDuration(1).play();
-    torchMixer3.clipAction(gltf.animations[0]).setDuration(1).play();
-
-    // set flame animations
-    sconeFlameMixer.clipAction(gltf.animations[0]).setDuration(1).play();
-    sconeFlameMixer2.clipAction(gltf.animations[0]).setDuration(1).play();
-    sconeFlameMixer3.clipAction(gltf.animations[0]).setDuration(1).play();
-    sconeFlameMixer4.clipAction(gltf.animations[0]).setDuration(1).play();
 
 
     // torch flame positions
@@ -295,32 +278,32 @@ function loadModels() {
   })
 }
 
-/// Mirror
+// /// Mirror
 const mirrorOptions = {
-  clipBasis: .9, // default 0, limits reflection
-  textureWidth: window.innerWidth * window.devicePixelRatio, // default 512, scales by pixel ratio of device
-  textureHeight: window.innerHeight * window.devicePixelRatio, // default 512, scales by pixel ratio of device
-  color: new Three.Color(0x7f7f7f), // default 0x7F7F7F
-  multisample: 1, // default 4; type of antialiasing (improve quality)
-
-  shader: Reflector.ReflectorShader, // default Reflector.ReflectorShader
+  clipBasis: 0.75, // default 0, limits reflection
+  // textureWidth: window.innerWidth * window.devicePixelRatio, // default 512, scales by pixel ratio of device
+  // textureHeight: window.innerHeight * window.devicePixelRatio, // default 512, scales by pixel ratio of 
+  textureWidth: 1024,
+  textureHeight: 1024,
 }
 
-const mirrorGeometry = new Three.PlaneGeometry(1000, 1000);
+const mirrorGeometry = new Three.PlaneGeometry(750, 750);
 // New instance of reflector class
 const mirror = new Reflector(mirrorGeometry, mirrorOptions);
 
 mirror.rotation.x = -Math.PI / 2;
-mirror.position.setY(-7);
+mirror.position.setY(-8);
 scene.add(mirror)
 
-/// floor
-const floor = new Three.BoxGeometry(1000, 1, 1000);
-const floorMaterial = new Three.MeshPhongMaterial({color: 0x474948, transparent: true, opacity: 0.75});
+
+const floor = new Three.PlaneGeometry(1000, 1000);
+const floorMaterial = new Three.MeshStandardMaterial({color:0x474948, roughness: 0.5, opacity: 0.85, transparent: true});
 const floorMesh = new Three.Mesh(floor, floorMaterial);
+floorMesh.rotation.x = -Math.PI / 2;
 floorMesh.position.setY(-7);
 floorMesh.receiveShadow = true;
-scene.add(floorMesh)
+scene.add(floorMesh);
+
 
 /// hotPoint Sphere
 const hotPointGeo = new Three.SphereGeometry(5, 5, 5);
@@ -351,13 +334,6 @@ function animate() {
   
   if (firePlaceMixer) firePlaceMixer.update(1/60);
   if (torchMixer) torchMixer.update(1/60);
-  if (torchMixer2) torchMixer2.update(1/60);
-  if (torchMixer3) torchMixer3.update(1/60);
-
-  if (sconeFlameMixer) sconeFlameMixer.update(1/60);
-  if (sconeFlameMixer2) sconeFlameMixer2.update(1/60);
-  if (sconeFlameMixer3) sconeFlameMixer3.update(1/60);
-  if (sconeFlameMixer4) sconeFlameMixer4.update(1/60);
   
 
   // if (!panCamera && !timeout) {
@@ -390,9 +366,9 @@ function onDocumentMouseDown(e) {
 
  
   const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign], true);
-  const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks], true);
+  const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, hotPoint3], true);
   const sphereIntersect2 = raycaster.intersectObject(hotPoint2, true);
-  const sphereIntersect3 = raycaster.intersectObject(hotPoint3, true);
+  // const sphereIntersect3 = raycaster.intersectObject(hotPoint3, true);
   const tavernIntersect = raycaster.intersectObject(tavern, true);
 
   if (noticeBoardIntersect.length) {
@@ -403,7 +379,7 @@ function onDocumentMouseDown(e) {
     foo(-4, 36.5, -64.5, -4, 36.5, -75.5)
   }
 
-  if (sphereIntersect3.length || pileOfBooksIntersect.length) {
+  if (pileOfBooksIntersect.length) {
     foo(44, 47, -15, 48, 47, -15)
   }
 
@@ -446,8 +422,14 @@ function toggleCamera(reset = true) {
 
   if (reset){
     cameraControls.enabled = true;
-    cameraControls.setLookAt(-200, 175, 200, 0, 0, 0, true)
-      .then(() => panCamera = true)
+    // cameraControls.setLookAt(-200, 175, 200, 0, 0, 0, true)
+    cameraControls.reset(true)
+      .then(() => {
+        const target = cameraControls.getTarget();
+        if (target.x == 0 && target.y == 0 && target.z == 0){
+          panCamera = true
+        }
+      })
   }
 }
 
