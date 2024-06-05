@@ -74,7 +74,7 @@ cameraControls.addEventListener('control', () => {
     panCamera = false;
     clearTimeout(timeout);
 
-    timeout = setTimeout(toggleCamera, 5000)
+    timeout = setTimeout(toggleCamera, 10000)
     return;
 })
 
@@ -295,11 +295,9 @@ function loadModels() {
 
 // /// Mirror
 const mirrorOptions = {
-  clipBasis: 0.75, // default 0, limits reflection
+  // clipBasis: 0.75, // default 0, limits reflection
   // textureWidth: window.innerWidth * window.devicePixelRatio, // default 512, scales by pixel ratio of device
   // textureHeight: window.innerHeight * window.devicePixelRatio, // default 512, scales by pixel ratio of 
-  textureWidth: 1024,
-  textureHeight: 1024,
 }
 
 const mirrorGeometry = new Three.PlaneGeometry(750, 750);
@@ -380,7 +378,6 @@ function onDocumentMouseDown(e) {
   raycaster.setFromCamera(mouse, camera);
 
   if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern) return;
-
  
   const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign], true);
   const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, hotPoint3], true);
