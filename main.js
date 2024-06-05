@@ -388,15 +388,14 @@ function onDocumentMouseDown(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  const noticeBoardIntersect = raycaster.intersectObject(noticeBoard, true); 
-  const resumeSignIntersect = raycaster.intersectObject(resumeSign, true);
-  const pileOfBooksIntersect = raycaster.intersectObject(pileOfBooks, true);
-  const secondPileOfBooksIntersect = raycaster.intersectObject(secondPileOfBooks, true);
+ 
+  const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign], true);
+  const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks], true);
   const sphereIntersect2 = raycaster.intersectObject(hotPoint2, true);
   const sphereIntersect3 = raycaster.intersectObject(hotPoint3, true);
-  const intersect = raycaster.intersectObjects(scene.children, true);
+  const tavernIntersect = raycaster.intersectObject(tavern, true);
 
-  if (noticeBoardIntersect.length || resumeSignIntersect.length) {
+  if (noticeBoardIntersect.length) {
       foo(41, 16, 139, 52, 16, 139)
   }
 
@@ -404,14 +403,12 @@ function onDocumentMouseDown(e) {
     foo(-4, 36.5, -64.5, -4, 36.5, -75.5)
   }
 
-  if (sphereIntersect3.length || pileOfBooksIntersect.length || secondPileOfBooksIntersect.length) {
+  if (sphereIntersect3.length || pileOfBooksIntersect.length) {
     foo(44, 47, -15, 48, 47, -15)
   }
 
-
-  if (intersect.length) {
-    console.log(intersect[0].object);
-    const name = intersect[0].object.name;
+  if (tavernIntersect.length) {
+    const name = tavernIntersect[0].object.name;
     if (name === "Cartaz_2_cartaz_Espelho_0001"){
       toggleCamera();
     }
@@ -431,7 +428,7 @@ function onHover(e) {
   
   const models = [noticeBoard, resumeSign, pileOfBooks, secondPileOfBooks]
   
-  
+
   let intersects = raycaster.intersectObjects(models, true);
   const intersect = raycaster.intersectObject(tavern, true);
   const intersectName = intersect.length && intersect[0].object.name;
