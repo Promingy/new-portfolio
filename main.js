@@ -45,8 +45,6 @@ const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
 // instantiate GLTFLoader - used to load 3D models - one linked to AWS the other for local files
 const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
-// const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
-
 // const loader = new GLTFLoader().setPath('models/');
 
 const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
@@ -82,15 +80,25 @@ cameraControls.addEventListener('control', () => {
 
 
 
-imageLoader.load('ainsworth_corbin_resume-pdf.png', (image) => {
-  const texture = new Three.CanvasTexture(image);
-
+imageLoader.load('ainsworth_corbin_resume.png', (image) => {
   const plane = new Three.PlaneGeometry(100, 100);
-  const material = new Three.MeshBasicMaterial({map: texture});
+  const texture = new Three.CanvasTexture(image);
+  const material = new Three.MeshStandardMaterial({map: texture});
   const mesh = new Three.Mesh(plane, material);
 
-  mesh.position.set(0, 0, 0);
-  mesh.scale.set(.5, .5, .5);
+  mesh.position.set(50.4, 15.75, 140.9);
+  mesh.scale.set(.113, .14, .1);
+  mesh.rotation.set(.075, -1.575, 0);
+
+  mesh.traverse(child => {
+    child.receiveShadow = true;
+
+    if (child.isMesh){
+      child.material.map.emissive = 0xffffff;
+      child.material.map.anisotropy = maxAnisotropy;
+      child.material.map.minFilter = Three.LinearFilter;
+    }
+  })
 
   scene.add(mesh);
 })
@@ -371,6 +379,18 @@ function animate() {
   
   if (firePlaceMixer) firePlaceMixer.update(1/60);
   if (torchMixer) torchMixer.update(1/60);
+
+  if (tControls.dragging){
+    panCamera = false;
+    clearTimeout(timeout);
+    cameraControls.enabled = false
+    console.log(tControls.scale)
+    console.log(tControls.position)
+    console.log(tControls.rotation)
+  }
+  else {
+    cameraControls.enabled = true;
+  }
   
 
   if (panCamera) {
