@@ -5,10 +5,8 @@ import { Reflector } from 'three/examples/jsm/objects/Reflector';
 import { TransformControls } from 'three/examples/jsm/Addons.js';
 import loadLights from './textures/lights';
 import './style.css'
-import { texture } from 'three/examples/jsm/nodes/Nodes.js';
 
 CameraControls.install ({THREE: Three})
-
 
 // initialize animation variables
 let firePlaceMixer, torchMixer;
@@ -49,6 +47,9 @@ const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 // const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
 const loader = new GLTFLoader().setPath('models/');
 
+// const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
+const imageLoader = new Three.ImageLoader().setPath('textures/');
+
 
 // instantiate raycaster and mouse - to detect user clicks and move the camera to hotpoints
 const raycaster = new Three.Raycaster();
@@ -81,9 +82,22 @@ cameraControls.addEventListener('control', () => {
 
 
 
+imageLoader.load('testSkyBox.jpg', (image) => {
+  const texture = new Three.CanvasTexture(image);
+
+  const plane = new Three.PlaneGeometry(100, 100);
+  const material = new Three.MeshBasicMaterial({map: texture});
+  const mesh = new Three.Mesh(plane, material);
+
+  mesh.position.set(0, 0, 0);
+  mesh.scale.set(1, 1, 1);
+
+  scene.add(mesh);
+})
 
 // create a function loadModels, that goes through and loads all of our 3D models
 function loadModels() {
+
 
   // load the Tavern
   loader.load('test.glb', function(gltf) {
@@ -226,12 +240,12 @@ function loadModels() {
         child.receiveShadow = true;
         child.castShadow = true;
         
-        if (child.isMesh){
-          child.material.color.set(0xbcbcbc);
-          child.material.map.anisotropy = maxAnisotropy;
-          child.material.map.minFilter = Three.NearestFilter;
-          child.material.map.magFilter = Three.NearestFilter;
-        }
+        // if (child.isMesh){
+        //   child.material.color.set(0xbcbcbc);
+        //   child.material.map.anisotropy = maxAnisotropy;
+        //   child.material.map.minFilter = Three.NearestFilter;
+        //   child.material.map.magFilter = Three.NearestFilter;
+        // }
     
     })
 
@@ -241,7 +255,6 @@ function loadModels() {
     noticeBoard.position.set(52, -5, 150)
     noticeBoard.rotation.set(0, -1.575, 0)
 
-    // tControls.attach(noticeBoard)
     scene.add(noticeBoard);
   })
 
@@ -277,6 +290,8 @@ function loadModels() {
     scene.add(secondPileOfBooks);
   })
 }
+
+
 
 // /// Mirror
 const mirrorOptions = {
@@ -363,6 +378,8 @@ function onDocumentMouseDown(e) {
   mouse.y = - (e.clientY / window.innerHeight) * 2 + 1;
 
   raycaster.setFromCamera(mouse, camera);
+
+  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern) return;
 
  
   const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign], true);
