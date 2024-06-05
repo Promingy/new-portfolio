@@ -45,10 +45,12 @@ const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
 // instantiate GLTFLoader - used to load 3D models - one linked to AWS the other for local files
 const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
+// const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
+
 // const loader = new GLTFLoader().setPath('models/');
 
-// const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
-const imageLoader = new Three.ImageLoader().setPath('textures/');
+const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
+// const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
 
 
 // instantiate raycaster and mouse - to detect user clicks and move the camera to hotpoints
@@ -63,7 +65,7 @@ renderer.domElement.addEventListener('mousemove', onHover)
 // set cameraControls properties
 const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
-cameraControls.maxDistance = 200;
+cameraControls.maxDistance = 333;
 // cameraControls.maxDistance = 700;
 cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
@@ -80,18 +82,18 @@ cameraControls.addEventListener('control', () => {
 
 
 
-// imageLoader.load('testSkyBox.jpg', (image) => {
-//   const texture = new Three.CanvasTexture(image);
+imageLoader.load('ainsworth_corbin_resume-pdf.png', (image) => {
+  const texture = new Three.CanvasTexture(image);
 
-//   const plane = new Three.PlaneGeometry(100, 100);
-//   const material = new Three.MeshBasicMaterial({map: texture});
-//   const mesh = new Three.Mesh(plane, material);
+  const plane = new Three.PlaneGeometry(100, 100);
+  const material = new Three.MeshBasicMaterial({map: texture});
+  const mesh = new Three.Mesh(plane, material);
 
-//   mesh.position.set(0, 0, 0);
-//   mesh.scale.set(1, 1, 1);
+  mesh.position.set(0, 0, 0);
+  mesh.scale.set(.5, .5, .5);
 
-//   scene.add(mesh);
-// })
+  scene.add(mesh);
+})
 
 // create a function loadModels, that goes through and loads all of our 3D models
 function loadModels() {
@@ -109,7 +111,6 @@ function loadModels() {
     tavern.traverse((child) => {
       if (child.isMesh) {
         child.material.side = Three.FrontSide;
-        // child.material.metalness = 0;
         
         if (child.material.map) {
           child.material.map.anisotropy = maxAnisotropy;
@@ -240,12 +241,12 @@ function loadModels() {
         child.receiveShadow = true;
         child.castShadow = true;
         
-        // if (child.isMesh){
-        //   child.material.color.set(0xbcbcbc);
-        //   child.material.map.anisotropy = maxAnisotropy;
-        //   child.material.map.minFilter = Three.NearestFilter;
-        //   child.material.map.magFilter = Three.NearestFilter;
-        // }
+        if (child.isMesh){
+          child.material.color.set(0xbcbcbc);
+          child.material.map.anisotropy = maxAnisotropy;
+          child.material.map.minFilter = Three.NearestFilter;
+          child.material.map.magFilter = Three.NearestFilter;
+        }
     
     })
 
@@ -277,6 +278,18 @@ function loadModels() {
     pileOfBooks.rotation.set(-1.6, -1.5, 0);
     pileOfBooks.position.set(48, 51.75, -14.4)
 
+    pileOfBooks.traverse(child => {
+      child.receiveShadow = true;
+      child.castShadow = true;
+
+      if (child.isMesh){
+        child.material.map.anisotropy = maxAnisotropy;
+        child.material.map.minFilter = Three.LinearFilter;
+        child.material.map.magFilter = Three.LinearFilter;
+        child.material.side = Three.FrontSide;
+      }
+    })
+
     scene.add(pileOfBooks);
   })
 
@@ -286,6 +299,18 @@ function loadModels() {
     secondPileOfBooks.scale.set(.15, .15, .15);
     secondPileOfBooks.rotation.set(-1.6, -1.5, 0);
     secondPileOfBooks.position.set(48, 51.75, -8);
+
+    secondPileOfBooks.traverse(child => {
+      child.receiveShadow = true;
+      child.castShadow = true;
+      
+      if (child.isMesh){
+        child.material.map.anisotropy = maxAnisotropy;
+        child.material.map.minFiler = Three.LinearFilter;
+        child.material.map.magFilter = Three.LinearFilter;
+        child.material.side = Three.FrontSide;
+      }
+    })
 
     scene.add(secondPileOfBooks);
   })
@@ -301,8 +326,7 @@ const mirrorOptions = {
 }
 
 const mirrorGeometry = new Three.PlaneGeometry(750, 750);
-// New instance of reflector class
-const mirror = new Reflector(mirrorGeometry, mirrorOptions);
+const mirror = new Reflector(mirrorGeometry);
 
 mirror.rotation.x = -Math.PI / 2;
 mirror.position.setY(-8);
@@ -348,18 +372,6 @@ function animate() {
   if (firePlaceMixer) firePlaceMixer.update(1/60);
   if (torchMixer) torchMixer.update(1/60);
   
-
-  // if (!panCamera && !timeout) {
-  //   timeout = setTimeout(() => {
-  //     toggleCamera(true)
-  //   }, 1000)
-  // }
-  //   console.log('position', tControls.object.position);
-  //   console.log('rotation', tControls.object.rotation);
-  //   console.log('scale', tControls.object.scale);
-  // } else {
-  //   cameraControls.enabled = true;
-  // }
 
   if (panCamera) {
     cameraControls.rotate(0.002, 0);
