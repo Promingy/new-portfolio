@@ -44,8 +44,8 @@ const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
 
 // instantiate GLTFLoader - used to load 3D models - one linked to AWS the other for local files
-// const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
-const loader = new GLTFLoader().setPath('models/');
+const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
+// const loader = new GLTFLoader().setPath('models/');
 
 // const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
 const imageLoader = new Three.ImageLoader().setPath('textures/');
@@ -71,36 +71,35 @@ cameraControls.truckSpeed = 0;
 cameraControls.enabled = true;
 cameraControls.smoothTime = .5;
 cameraControls.addEventListener('control', () => {
-  if (cameraControls.currentAction) {
     panCamera = false;
     clearTimeout(timeout);
+
     timeout = setTimeout(toggleCamera, 5000)
     return;
-  }
-  clearTimeout(timeout);
 })
 
 
 
-imageLoader.load('testSkyBox.jpg', (image) => {
-  const texture = new Three.CanvasTexture(image);
+// imageLoader.load('testSkyBox.jpg', (image) => {
+//   const texture = new Three.CanvasTexture(image);
 
-  const plane = new Three.PlaneGeometry(100, 100);
-  const material = new Three.MeshBasicMaterial({map: texture});
-  const mesh = new Three.Mesh(plane, material);
+//   const plane = new Three.PlaneGeometry(100, 100);
+//   const material = new Three.MeshBasicMaterial({map: texture});
+//   const mesh = new Three.Mesh(plane, material);
 
-  mesh.position.set(0, 0, 0);
-  mesh.scale.set(1, 1, 1);
+//   mesh.position.set(0, 0, 0);
+//   mesh.scale.set(1, 1, 1);
 
-  scene.add(mesh);
-})
+//   scene.add(mesh);
+// })
 
 // create a function loadModels, that goes through and loads all of our 3D models
 function loadModels() {
 
 
   // load the Tavern
-  loader.load('test.glb', function(gltf) {
+  // loader.load('test.glb', function(gltf) {
+  loader.load('updated_tavern.glb', function(gltf) {
     tavern = gltf.scene;
 
     // set tavern properties
@@ -233,7 +232,8 @@ function loadModels() {
     scene.add(sconeFlame, sconeFlame2, sconeFlame3, sconeFlame4);
   })
 
-  loader.load('test_board.glb', (gltf) => {
+  // loader.load('test_board.glb', (gltf) => {
+  loader.load('bounty_board_w_resume.glb', (gltf) => {
     noticeBoard = gltf.scene;
 
     noticeBoard.traverse(child => {
@@ -434,6 +434,7 @@ function onHover(e) {
 }
 
 function toggleCamera(reset = true) {
+  clearTimeout(timeout);
   cameraControls.enabled = false;
   panCamera = false;
 
