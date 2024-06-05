@@ -12,7 +12,7 @@ CameraControls.install ({THREE: Three})
 // initialize animation variables
 let firePlaceMixer, torchMixer, torchMixer2, torchMixer3;
 let sconeFlameMixer, sconeFlameMixer2, sconeFlameMixer3, sconeFlameMixer4;
-let noticeBoard, resumeSign, pileOfBooks, secondPileOfBooks, timeout;
+let tavern, noticeBoard, resumeSign, pileOfBooks, secondPileOfBooks, timeout;
 let panCamera = true;
 
 
@@ -87,7 +87,7 @@ function loadModels() {
 
   // load the Tavern
   loader.load('test.glb', function(gltf) {
-    const tavern = gltf.scene;
+    tavern = gltf.scene;
 
     // set tavern properties
     tavern.scale.set(25,25,25);
@@ -427,25 +427,19 @@ function onHover(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  const intersects = [];
-
-  let noticeBoardIntersect = noticeBoard && raycaster.intersectObject(noticeBoard, true); 
-  let resumeSignIntersect = resumeSign && raycaster.intersectObject(resumeSign, true);
-  let pileOfBooksIntersect = pileOfBooks && raycaster.intersectObject(pileOfBooks, true);
-  let secondPileOfBooksIntersect = secondPileOfBooks && raycaster.intersectObject(secondPileOfBooks, true);
-  const intersect = raycaster.intersectObjects(scene.children, true);
+  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern) return;
+  
+  const models = [noticeBoard, resumeSign, pileOfBooks, secondPileOfBooks]
+  
+  
+  let intersects = raycaster.intersectObjects(models, true);
+  const intersect = raycaster.intersectObject(tavern, true);
   const intersectName = intersect.length && intersect[0].object.name;
-
-
-  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks) return;
-
-  intersects.push(...noticeBoardIntersect, ...resumeSignIntersect, ...pileOfBooksIntersect, ...secondPileOfBooksIntersect);
-
 
   if (intersects.length || intersectName === "Cartaz_2_cartaz_Espelho_0001")
     document.body.style.cursor = 'pointer';
-  else 
-    document.body.style.cursor = 'default'
+  else
+    document.body.style.cursor = 'default';
   
 }
 
