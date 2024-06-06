@@ -44,8 +44,8 @@ const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
 
 // instantiate GLTFLoader - used to load 3D models - one linked to AWS the other for local files
-const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
-// const loader = new GLTFLoader().setPath('models/');
+// const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
+const loader = new GLTFLoader().setPath('models/');
 
 const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
 // const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
@@ -138,27 +138,42 @@ function loadModels() {
     scene.add(tavern);
   })
 
-  loader.load('resume_sign.glb', function(gltf) {
+  loader.load('updated_resume_sign.glb', function(gltf) {
     resumeSign = gltf.scene
     resumeSign.position.set(54, 40, 145)
     resumeSign.rotation.set(0, 1.575, 0)
-    resumeSign.scale.set(10, 10, 10)
+    resumeSign.scale.set(10, 12, 12)
 
     resumeSign.traverse(child => {
       child.receiveShadow = true;
       child.castShadow = true;
+      if (child.mesh) {
+        child.material.side = Three.FrontSide;
+      }
     })
 
     // tControls.attach(sign)
     scene.add(resumeSign)
   })
+
+    loader.load('resume_letters.glb', function(gltf){
+      const letters = gltf.scene;
+      letters.position.set(54, 40, 145)
+      letters.rotation.set(0, 1.575, 0)
+      letters.scale.set(10, 12, 12)
+
+      letters.traverse(child => {
+        // child.receiveShadow = true;
+        child.castShadow = true;
+
+        if (child.isMesh){
+          child.material.side = Three.FrontSide;
+        }
+      })
+
+      scene.add(letters);
     
-    
-  // loader.load('medieval_book.glb', function(book) {
-  //   book.scene.scale.set(1, 1, 1);
-  //   book.scene.position.setY(10)
-  //   scene.add(book.scene);
-  // })
+    })
   loader.load('medieval_book_stack.glb', function(gltf) {
     const bookStack = gltf.scene;
     bookStack.scale.set(.33, .33, .33);
