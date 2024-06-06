@@ -107,9 +107,9 @@ imageLoader.load('about_me.png', (image) => {
   const plane = new Three.PlaneGeometry(50, 50);
   const texture = new Three.CanvasTexture(image);
   const material = new Three.MeshStandardMaterial({map: texture});
-  skillsText = new Three.Mesh(plane, material);
+  const aboutMe = new Three.Mesh(plane, material);
 
-  skillsText.traverse(child => {
+  aboutMe.traverse(child => {
     child.receiveShadow = true;
 
     if (child.isMesh){
@@ -119,10 +119,10 @@ imageLoader.load('about_me.png', (image) => {
     }
   })
 
-  skillsText.scale.set(.095, .17)
-  skillsText.position.set(-3.91, 36.5, -69.95)
+  aboutMe.scale.set(.095, .17)
+  aboutMe.position.set(-3.91, 36.5, -69.95)
 
-  scene.add(skillsText);
+  scene.add(aboutMe);
 
 })
 
@@ -218,7 +218,7 @@ fontLoader.load('models/Playball_Regular.json', (font) => {
     // child.receiveShadow = true;
     child.castShadow = true;
   });
-
+  // tControls.attach(aboutText);
   scene.add(aboutText);
 })
 
@@ -505,14 +505,14 @@ scene.add(floorMesh);
 
 
 /// hotPoint Sphere
-const hotPointGeo = new Three.SphereGeometry(5, 5, 5);
-const hotPointMaterial = new Three.MeshBasicMaterial({color: 0xffffff});
-const hotPoint = new Three.Mesh(hotPointGeo, hotPointMaterial);
-hotPoint.position.set(52, 22, 177);
+// const hotPointGeo = new Three.SphereGeometry(5, 5, 5);
+// const hotPointMaterial = new Three.MeshBasicMaterial({color: 0xffffff});
+// const hotPoint = new Three.Mesh(hotPointGeo, hotPointMaterial);
+// hotPoint.position.set(52, 22, 177);
 
-const hotPoint2 = hotPoint.clone();
-hotPoint2.position.set(13, 35, -70);
-scene.add(hotPoint2);
+// const hotPoint2 = hotPoint.clone();
+// hotPoint2.position.set(13, 35, -70);
+// scene.add(hotPoint2);
 
 
 scene.add(loadLights());
@@ -559,7 +559,7 @@ function onDocumentMouseDown(e) {
  
   const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeText], true);
   const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsText], true);
-  const sphereIntersect2 = raycaster.intersectObjects([hotPoint2, aboutText], true);
+  const sphereIntersect2 = raycaster.intersectObjects([aboutText], true);
 
   // const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign, resumeText], true);
   // const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsSign, skillsText], true);
