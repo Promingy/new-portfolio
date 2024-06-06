@@ -12,7 +12,7 @@ CameraControls.install ({THREE: Three})
 let firePlaceMixer, torchMixer;
 let tavern, noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, timeout;
 let panCamera = true;
-let aboutMe, testMesh, resumeText, skillsText, aboutText
+let skillsText, testMesh, resumeText, aboutText;
 
 
 // instantiate scene, camera, and renderer
@@ -107,9 +107,9 @@ imageLoader.load('about_me.png', (image) => {
   const plane = new Three.PlaneGeometry(50, 50);
   const texture = new Three.CanvasTexture(image);
   const material = new Three.MeshStandardMaterial({map: texture});
-  aboutMe = new Three.Mesh(plane, material);
+  skillsText = new Three.Mesh(plane, material);
 
-  aboutMe.traverse(child => {
+  skillsText.traverse(child => {
     child.receiveShadow = true;
 
     if (child.isMesh){
@@ -119,10 +119,10 @@ imageLoader.load('about_me.png', (image) => {
     }
   })
 
-  aboutMe.scale.set(.095, .17)
-  aboutMe.position.set(-3.91, 36.5, -69.95)
+  skillsText.scale.set(.095, .17)
+  skillsText.position.set(-3.91, 36.5, -69.95)
 
-  scene.add(aboutMe);
+  scene.add(skillsText);
 
 })
 
@@ -130,6 +130,7 @@ imageLoader.load('about_me.png', (image) => {
 
 const fontLoader = new FontLoader();
 
+// Back
 fontLoader.load('models/Playball_Regular.json', function ( font ) {
 
 	const geometry = new TextGeometry( 'Back', {
@@ -145,6 +146,7 @@ fontLoader.load('models/Playball_Regular.json', function ( font ) {
   scene.add(testMesh)
 } );
 
+// Resume
 fontLoader.load('models/Playball_Regular.json', function ( font ) {
   const geometry = new TextGeometry( 'Resume', {
     font: font,
@@ -154,8 +156,13 @@ fontLoader.load('models/Playball_Regular.json', function ( font ) {
 
   const material = new Three.MeshStandardMaterial({color: 0xffffff});
   resumeText = new Three.Mesh(geometry, material);
+  
+  // on Floor position and Scale
   resumeText.position.set(-175, -7, -50);
   resumeText.rotation.set(-1.575,0,0)
+
+  // on Sign position and scale)
+
 
   resumeText.traverse(child => {
     // child.receiveShadow = true;
@@ -165,6 +172,7 @@ fontLoader.load('models/Playball_Regular.json', function ( font ) {
   scene.add(resumeText);
 })
 
+// Skills
 fontLoader.load('models/Playball_Regular.json', function ( font ) {
   const geometry = new TextGeometry( 'Skills', {
     font: font,
@@ -174,8 +182,16 @@ fontLoader.load('models/Playball_Regular.json', function ( font ) {
 
   const material = new Three.MeshStandardMaterial({color: 0xffffff});
   skillsText = new Three.Mesh(geometry, material);
+
+  //on Sign position and scale
   skillsText.position.set(-180, -7, -25);
   skillsText.rotation.set(-1.575,0,0)
+
+  // on Floor position and scale
+  // skillsText.position.set(53.75, 64.25, 0);
+  // skillsText.rotation.set(0, -1.575, 0);
+  // skillsText.scale.set(1.1, .5, 1);
+
 
   skillsText.traverse(child => {
     // child.receiveShadow = true;
@@ -185,6 +201,7 @@ fontLoader.load('models/Playball_Regular.json', function ( font ) {
   scene.add(skillsText);
 })
 
+// About Me
 fontLoader.load('models/Playball_Regular.json', (font) => {
   const geometry = new TextGeometry( 'About Me', {
     font: font,
@@ -243,9 +260,9 @@ function loadModels() {
 
   // loader.load('updated_resume_sign.glb', function(gltf) {
   //   resumeSign = gltf.scene;
-  //   resumeSign.position.set(54, 40, 145);
+  //   resumeSign.position.set(54, 37, 151.75);
   //   resumeSign.rotation.set(0, 1.575, 0);
-  //   resumeSign.scale.set(10, 13, 15);
+  //   resumeSign.scale.set(13, 13, 15);
 
   //   resumeSign.traverse(child => {
   //     child.receiveShadow = true;
@@ -278,13 +295,13 @@ function loadModels() {
   // });
 
   // loader.load('skills_letters.glb', function(gltf) {
-  //   aboutMe = gltf.scene;
+  //   skillsText = gltf.scene;
     
-  //   aboutMe.position.set(53.75, 60, 15);
-  //   aboutMe.rotation.set(0, 1.575, 0);
-  //   aboutMe.scale.set(15, 10, 12);
+  //   skillsText.position.set(53.75, 60, 15);
+  //   skillsText.rotation.set(0, 1.575, 0);
+  //   skillsText.scale.set(15, 10, 12);
 
-  //   aboutMe.traverse(child => {
+  //   skillsText.traverse(child => {
   //     child.castShadow = true;
 
   //     if (child.isMesh){
@@ -292,16 +309,16 @@ function loadModels() {
   //     };
   //   });
 
-  //   scene.add(aboutMe);
+  //   scene.add(skillsText);
   // });
 
   // loader.load('resume_letters.glb', function(gltf){
-  //   const letters = gltf.scene;
-  //   letters.position.set(54, 40, 145);
-  //   letters.rotation.set(0, 1.575, 0);
-  //   letters.scale.set(10, 13, 15);
+  //   resumeText = gltf.scene;
+  //   resumeText.position.set(54, 37, 151.75);
+  //   resumeText.rotation.set(0, 1.575, 0);
+  //   resumeText.scale.set(13, 13, 15);
 
-  //   letters.traverse(child => {
+  //   resumeText.traverse(child => {
   //     child.castShadow = true;
 
   //     if (child.isMesh){
@@ -309,7 +326,7 @@ function loadModels() {
   //     };
   //   });
 
-  //   scene.add(letters);
+  //   scene.add(resumeText);
   // });
   loader.load('medieval_book_stack.glb', function(gltf) {
     const bookStack = gltf.scene;
@@ -523,7 +540,7 @@ function animate() {
   // }
   
   if (panCamera) {
-    cameraControls.rotate(0.002, 0);
+    cameraControls.rotate(0.001, 0);
   }
   
   renderer.render(scene, camera);
@@ -540,11 +557,14 @@ function onDocumentMouseDown(e) {
 
   // if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern || !skillsSign) return;
  
-  // const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign], true);
   const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeText], true);
-  // const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsSign], true);
   const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsText], true);
   const sphereIntersect2 = raycaster.intersectObjects([hotPoint2, aboutText], true);
+
+  // const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign, resumeText], true);
+  // const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsSign, skillsText], true);
+  // const sphereIntersect2 = raycaster.intersectObjects([hotPoint2], true);
+
   const backIntersect = raycaster.intersectObject(testMesh, true);
 
   if (noticeBoardIntersect.length) {
@@ -562,8 +582,6 @@ function onDocumentMouseDown(e) {
   if (backIntersect.length){
     toggleCamera();
   };
-
-
 };
 
 function onHover(e) {
@@ -575,23 +593,25 @@ function onHover(e) {
   raycaster.setFromCamera(mouse, camera);
 
   // if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !skillsSign || !testMesh) return;
-  if (!noticeBoard || !pileOfBooks || !secondPileOfBooks || !testMesh) return;
-  
-  // const models = [noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, aboutMe, testMesh];
+  // const models = [noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, skillsText, testMesh, resumeText];
+
+  // if (!noticeBoard || !pileOfBooks || !secondPileOfBooks || !testMesh) return;
   const models = [noticeBoard, pileOfBooks, secondPileOfBooks, testMesh, resumeText, skillsText, aboutText];
 
   let intersects = raycaster.intersectObjects(models, true);
 
   if (intersects.length){
+    let object = intersects[0].object;
     document.body.style.cursor = 'pointer'
-    if (intersects[0].object == testMesh) testMesh.scale.set(1.1, 1.1, 1.1);
-    else if (intersects[0].object == resumeText) resumeText.material.color.set('red')
-    else if (intersects[0].object == skillsText) skillsText.material.color.set('red');
+    if (object == testMesh) testMesh.material.color.set('red');
+    else if (object == skillsText) skillsText.material.color.set('red');
+    else if (object == resumeText) resumeText.material.color.set('red');
     else if (intersects[0].object == aboutText) aboutText.material.color.set('red');
   }else {
     document.body.style.cursor = 'default';
-    if (resumeText.color != 0xffffff) resumeText.material.color.set(0xffffff);
+    if (testMesh.color != 0xffffff) testMesh.material.color.set(0xffffff);
     if (skillsText.color != 0xffffff) skillsText.material.color.set(0xffffff);
+    if (resumeText.color != 0xffffff) resumeText.material.color.set(0xffffff);
     if (aboutText.color != 0xffffff) aboutText.material.color.set(0xffffff);
   }
 }
