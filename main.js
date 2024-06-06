@@ -12,7 +12,7 @@ CameraControls.install ({THREE: Three})
 let firePlaceMixer, torchMixer;
 let tavern, noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, timeout;
 let panCamera = true;
-let aboutMe, testMesh, resumeText
+let aboutMe, testMesh, resumeText, skillsText, aboutText
 
 
 // instantiate scene, camera, and renderer
@@ -149,14 +149,60 @@ fontLoader.load('models/Playball_Regular.json', function ( font ) {
   const geometry = new TextGeometry( 'Resume', {
     font: font,
     size: 15,
-    depth: 5,
+    depth: 2,
   });
 
-  const material = new Three.MeshBasicMaterial({color: 0xffffff});
+  const material = new Three.MeshStandardMaterial({color: 0xffffff});
   resumeText = new Three.Mesh(geometry, material);
-  resumeText.position.set(-200, -7, 0);
+  resumeText.position.set(-175, -7, -50);
   resumeText.rotation.set(-1.575,0,0)
+
+  resumeText.traverse(child => {
+    // child.receiveShadow = true;
+    child.castShadow = true;
+  });
+
   scene.add(resumeText);
+})
+
+fontLoader.load('models/Playball_Regular.json', function ( font ) {
+  const geometry = new TextGeometry( 'Skills', {
+    font: font,
+    size: 15,
+    depth: 2,
+  });
+
+  const material = new Three.MeshStandardMaterial({color: 0xffffff});
+  skillsText = new Three.Mesh(geometry, material);
+  skillsText.position.set(-180, -7, -25);
+  skillsText.rotation.set(-1.575,0,0)
+
+  skillsText.traverse(child => {
+    // child.receiveShadow = true;
+    child.castShadow = true;
+  });
+
+  scene.add(skillsText);
+})
+
+fontLoader.load('models/Playball_Regular.json', (font) => {
+  const geometry = new TextGeometry( 'About Me', {
+    font: font,
+    size: 15,
+    depth: 2,
+  });
+
+  const material = new Three.MeshStandardMaterial({color: 0xffffff});
+  aboutText = new Three.Mesh(geometry, material);
+  aboutText.position.set(-183, -7, 0);
+  aboutText.rotation.set(-1.575,0,0)
+
+  aboutText.traverse(child => {
+    // child.receiveShadow = true;
+    child.castShadow = true;
+  });
+
+  scene.add(aboutText);
 })
 
 // ! end test
@@ -497,8 +543,8 @@ function onDocumentMouseDown(e) {
   // const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign], true);
   const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeText], true);
   // const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsSign], true);
-  const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks], true);
-  const sphereIntersect2 = raycaster.intersectObject(hotPoint2, true);
+  const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsText], true);
+  const sphereIntersect2 = raycaster.intersectObjects([hotPoint2, aboutText], true);
   const backIntersect = raycaster.intersectObject(testMesh, true);
 
   if (noticeBoardIntersect.length) {
@@ -532,21 +578,21 @@ function onHover(e) {
   if (!noticeBoard || !pileOfBooks || !secondPileOfBooks || !testMesh) return;
   
   // const models = [noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, aboutMe, testMesh];
-  const models = [noticeBoard, pileOfBooks, secondPileOfBooks, testMesh, resumeText];
+  const models = [noticeBoard, pileOfBooks, secondPileOfBooks, testMesh, resumeText, skillsText, aboutText];
 
   let intersects = raycaster.intersectObjects(models, true);
 
   if (intersects.length){
     document.body.style.cursor = 'pointer'
-    if (intersects[0].object == testMesh) {
-      testMesh.scale.set(1.1, 1.1, 1.1);
-    }
-    if (intersects[0].object == resumeText) {
-      resumeText.material.color.set('beige')
-    }
+    if (intersects[0].object == testMesh) testMesh.scale.set(1.1, 1.1, 1.1);
+    else if (intersects[0].object == resumeText) resumeText.material.color.set('red')
+    else if (intersects[0].object == skillsText) skillsText.material.color.set('red');
+    else if (intersects[0].object == aboutText) aboutText.material.color.set('red');
   }else {
     document.body.style.cursor = 'default';
-    if (resumeText.color == 'beige') resumeText.material.color.set('white');
+    if (resumeText.color != 0xffffff) resumeText.material.color.set(0xffffff);
+    if (skillsText.color != 0xffffff) skillsText.material.color.set(0xffffff);
+    if (aboutText.color != 0xffffff) aboutText.material.color.set(0xffffff);
   }
 }
 
