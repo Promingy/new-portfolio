@@ -1,4 +1,4 @@
-import { TransformControls, CSS3DRenderer } from 'three/examples/jsm/Addons.js';
+import { TransformControls, TextGeometry, FontLoader } from 'three/examples/jsm/Addons.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Reflector } from 'three/examples/jsm/objects/Reflector';
 import CameraControls from 'camera-controls';
@@ -12,7 +12,7 @@ CameraControls.install ({THREE: Three})
 let firePlaceMixer, torchMixer;
 let tavern, noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, timeout;
 let panCamera = true;
-let skillLetters, skillLetters2
+let aboutMe, testMesh, resumeText
 
 
 // instantiate scene, camera, and renderer
@@ -107,9 +107,9 @@ imageLoader.load('about_me.png', (image) => {
   const plane = new Three.PlaneGeometry(50, 50);
   const texture = new Three.CanvasTexture(image);
   const material = new Three.MeshStandardMaterial({map: texture});
-  const mesh = new Three.Mesh(plane, material);
+  aboutMe = new Three.Mesh(plane, material);
 
-  mesh.traverse(child => {
+  aboutMe.traverse(child => {
     child.receiveShadow = true;
 
     if (child.isMesh){
@@ -119,35 +119,46 @@ imageLoader.load('about_me.png', (image) => {
     }
   })
 
-  mesh.scale.set(.095, .17)
-  mesh.position.set(-3.91, 36.5, -69.95)
+  aboutMe.scale.set(.095, .17)
+  aboutMe.position.set(-3.91, 36.5, -69.95)
 
-  scene.add(mesh);
+  scene.add(aboutMe);
 
 })
 
 // ! test
-const canvas = document.createElement('canvas');
-const ctx = canvas.getContext('2d');
-const text = 'Back'
 
-ctx.font = 'Bold 120px Arial';
-ctx.fillStyle = 'white';
-ctx.fillText(text, 0, 120);
+const fontLoader = new FontLoader();
 
+fontLoader.load('models/Playball_Regular.json', function ( font ) {
 
-const texture = new Three.CanvasTexture(canvas);
-texture.needsUpdate = true;
+	const geometry = new TextGeometry( 'Back', {
+		font: font,
+		size: .25,
+		depth: 0
+	} );
 
-const material = new Three.MeshBasicMaterial({map: texture});
-const geometry = new Three.PlaneGeometry(10, 7);
+  const material = new Three.MeshBasicMaterial( { color: 0xffffff } );
 
-const mesh = new Three.Mesh(geometry, material);
-mesh.position.set(-2.5, 32.75, -69.94);
-mesh.scale.set(.1, .1);
-mesh.material.transparent = true
-mesh.name = 'test'
-scene.add(mesh);
+  testMesh = new Three.Mesh( geometry, material );
+  testMesh.position.set(-2.5, 32.5, -69.94)
+  scene.add(testMesh)
+} );
+
+fontLoader.load('models/Playball_Regular.json', function ( font ) {
+  const geometry = new TextGeometry( 'Resume', {
+    font: font,
+    size: 15,
+    depth: 5,
+  });
+
+  const material = new Three.MeshBasicMaterial({color: 0xffffff});
+  resumeText = new Three.Mesh(geometry, material);
+  resumeText.position.set(-200, -7, 0);
+  resumeText.rotation.set(-1.575,0,0)
+  scene.add(resumeText);
+})
+
 // ! end test
 
 // create a function loadModels, that goes through and loads all of our 3D models
@@ -184,93 +195,76 @@ function loadModels() {
     scene.add(tavern);
   });
 
-  loader.load('updated_resume_sign.glb', function(gltf) {
-    resumeSign = gltf.scene;
-    resumeSign.position.set(54, 40, 145);
-    resumeSign.rotation.set(0, 1.575, 0);
-    resumeSign.scale.set(10, 12, 12);
+  // loader.load('updated_resume_sign.glb', function(gltf) {
+  //   resumeSign = gltf.scene;
+  //   resumeSign.position.set(54, 40, 145);
+  //   resumeSign.rotation.set(0, 1.575, 0);
+  //   resumeSign.scale.set(10, 13, 15);
 
-    resumeSign.traverse(child => {
-      child.receiveShadow = true;
-      child.castShadow = true;
-      if (child.mesh) {
-        child.material.side = Three.FrontSide;
-      };
-    });
+  //   resumeSign.traverse(child => {
+  //     child.receiveShadow = true;
+  //     child.castShadow = true;
+  //     if (child.mesh) {
+  //       child.material.side = Three.FrontSide;
+  //     };
+  //   });
 
-    scene.add(resumeSign);
-  });
+  //   scene.add(resumeSign);
+  // });
 
-  loader.load('skills_sign.glb', function(gltf) {
-    skillsSign = gltf.scene;
-    skillsSign.position.set(53.75, 60.75, 15);
-    skillsSign.rotation.set(0, 1.575, 0);
-    skillsSign.scale.set(15, 10, 12);
+  // loader.load('skills_sign.glb', function(gltf) {
+  //   skillsSign = gltf.scene;
+  //   skillsSign.position.set(53.75, 60.75, 15);
+  //   skillsSign.rotation.set(0, 1.575, 0);
+  //   skillsSign.scale.set(15, 10, 12);
 
-    skillsSign.traverse(child => {
-      child.castShadow = true;
+  //   skillsSign.traverse(child => {
+  //     child.castShadow = true;
 
-      if (child.isMesh && child.material.map){
-        child.material.side = Three.FrontSide;
-        child.material.map.minFilter = Three.NearestFilter;
-        child.material.map.magFilter = Three.NearestFilter;
-      };
-    });
+  //     if (child.isMesh && child.material.map){
+  //       child.material.side = Three.FrontSide;
+  //       child.material.map.minFilter = Three.NearestFilter;
+  //       child.material.map.magFilter = Three.NearestFilter;
+  //     };
+  //   });
 
-    scene.add(skillsSign);
-  });
+  //   scene.add(skillsSign);
+  // });
 
-  loader.load('skills_letters.glb', function(gltf) {
-    skillLetters = gltf.scene;
+  // loader.load('skills_letters.glb', function(gltf) {
+  //   aboutMe = gltf.scene;
     
-    skillLetters.position.set(53.75, 60, 15);
-    skillLetters.rotation.set(0, 1.575, 0);
-    skillLetters.scale.set(15, 10, 12);
+  //   aboutMe.position.set(53.75, 60, 15);
+  //   aboutMe.rotation.set(0, 1.575, 0);
+  //   aboutMe.scale.set(15, 10, 12);
 
-    skillLetters.traverse(child => {
-      child.castShadow = true;
+  //   aboutMe.traverse(child => {
+  //     child.castShadow = true;
 
-      if (child.isMesh){
-        child.material.side = Three.FrontSide;
-      };
-    });
+  //     if (child.isMesh){
+  //       child.material.side = Three.FrontSide;
+  //     };
+  //   });
 
-    scene.add(skillLetters);
-  });
+  //   scene.add(aboutMe);
+  // });
 
-  loader.load('skills_letters.glb', function(gltf) {
-    skillLetters2 = gltf.scene;
+  // loader.load('resume_letters.glb', function(gltf){
+  //   const letters = gltf.scene;
+  //   letters.position.set(54, 40, 145);
+  //   letters.rotation.set(0, 1.575, 0);
+  //   letters.scale.set(10, 13, 15);
 
-    skillLetters2.position.set(53.75, 60, 15);
-    skillLetters2.rotation.set(0, 1.575, 0);
-    skillLetters2.scale.set(15, 10, 12);
+  //   letters.traverse(child => {
+  //     child.castShadow = true;
 
-    skillLetters2.traverse(child => {
-      if (child.isMesh) {
-        child.material.color.set('green')
-      }
-    })
+  //     if (child.isMesh){
+  //       child.material.side = Three.FrontSide;
+  //     };
+  //   });
 
-    skillLetters2.visible = false;
-    scene.add(skillLetters2)
-  })
-
-  loader.load('resume_letters.glb', function(gltf){
-    const letters = gltf.scene;
-    letters.position.set(54, 40, 145);
-    letters.rotation.set(0, 1.575, 0);
-    letters.scale.set(10, 12, 12);
-
-    letters.traverse(child => {
-      child.castShadow = true;
-
-      if (child.isMesh){
-        child.material.side = Three.FrontSide;
-      };
-    });
-
-    scene.add(letters);
-  });
+  //   scene.add(letters);
+  // });
   loader.load('medieval_book_stack.glb', function(gltf) {
     const bookStack = gltf.scene;
     bookStack.scale.set(.33, .33, .33);
@@ -430,13 +424,6 @@ function loadModels() {
 
 
 
-// /// Mirror
-const mirrorOptions = {
-  // clipBasis: 0.75, // default 0, limits reflection
-  // textureWidth: window.innerWidth * window.devicePixelRatio, // default 512, scales by pixel ratio of device
-  // textureHeight: window.innerHeight * window.devicePixelRatio, // default 512, scales by pixel ratio of 
-};
-
 const mirrorGeometry = new Three.PlaneGeometry(750, 750);
 const mirror = new Reflector(mirrorGeometry);
 
@@ -479,17 +466,16 @@ function animate() {
   if (firePlaceMixer) firePlaceMixer.update(1/60);
   if (torchMixer) torchMixer.update(1/60);
 
-  if (tControls.dragging){
-    panCamera = false;
-    clearTimeout(timeout);
-    cameraControls.enabled = false;
-    console.log(mesh.position);
-  }
-  else {
-    cameraControls.enabled = true;
-  }
+  // if (tControls.dragging){
+  //   panCamera = false;
+  //   clearTimeout(timeout);
+  //   cameraControls.enabled = false;
+  //   console.log(mesh.position);
+  // }
+  // else {
+  //   cameraControls.enabled = true;
+  // }
   
-
   if (panCamera) {
     cameraControls.rotate(0.002, 0);
   }
@@ -506,12 +492,14 @@ function onDocumentMouseDown(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern || !skillsSign) return;
+  // if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern || !skillsSign) return;
  
-  const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign], true);
-  const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsSign], true);
+  // const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign], true);
+  const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeText], true);
+  // const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsSign], true);
+  const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks], true);
   const sphereIntersect2 = raycaster.intersectObject(hotPoint2, true);
-  const backIntersect = raycaster.intersectObject(mesh, true);
+  const backIntersect = raycaster.intersectObject(testMesh, true);
 
   if (noticeBoardIntersect.length) {
       foo(41, 16, 139, 52, 16, 139);
@@ -540,17 +528,26 @@ function onHover(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !skillsSign) return;
+  // if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !skillsSign || !testMesh) return;
+  if (!noticeBoard || !pileOfBooks || !secondPileOfBooks || !testMesh) return;
   
-  const models = [noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, mesh];
+  // const models = [noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, aboutMe, testMesh];
+  const models = [noticeBoard, pileOfBooks, secondPileOfBooks, testMesh, resumeText];
 
   let intersects = raycaster.intersectObjects(models, true);
 
-
-  if (intersects.length)
-    document.body.style.cursor = 'pointer';
-  else
+  if (intersects.length){
+    document.body.style.cursor = 'pointer'
+    if (intersects[0].object == testMesh) {
+      testMesh.scale.set(1.1, 1.1, 1.1);
+    }
+    if (intersects[0].object == resumeText) {
+      resumeText.material.color.set('beige')
+    }
+  }else {
     document.body.style.cursor = 'default';
+    if (resumeText.color == 'beige') resumeText.material.color.set('white');
+  }
 }
 
 function toggleCamera(reset = true) {
