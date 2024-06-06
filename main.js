@@ -1,9 +1,9 @@
-import * as Three from 'three';
+import { TransformControls, CSS3DRenderer } from 'three/examples/jsm/Addons.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import CameraControls from 'camera-controls';
 import { Reflector } from 'three/examples/jsm/objects/Reflector';
-import { TransformControls } from 'three/examples/jsm/Addons.js';
+import CameraControls from 'camera-controls';
 import loadLights from './textures/lights';
+import * as Three from 'three';
 import './style.css';
 
 CameraControls.install ({THREE: Three})
@@ -12,6 +12,7 @@ CameraControls.install ({THREE: Three})
 let firePlaceMixer, torchMixer;
 let tavern, noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, timeout;
 let panCamera = true;
+let skillLetters, skillLetters2
 
 
 // instantiate scene, camera, and renderer
@@ -64,7 +65,6 @@ renderer.domElement.addEventListener('mousemove', onHover);
 const clock = new Three.Clock();
 const cameraControls = new CameraControls(camera, renderer.domElement);
 cameraControls.maxDistance = 333;
-// cameraControls.maxDistance = 700;
 cameraControls.minDistance = 170;
 cameraControls.maxPolarAngle = Math.PI / 2;
 cameraControls.truckSpeed = 0;
@@ -102,6 +102,53 @@ imageLoader.load('ainsworth_corbin_resume.png', (image) => {
 
   scene.add(mesh);
 });
+
+imageLoader.load('about_me.png', (image) => {
+  const plane = new Three.PlaneGeometry(50, 50);
+  const texture = new Three.CanvasTexture(image);
+  const material = new Three.MeshStandardMaterial({map: texture});
+  const mesh = new Three.Mesh(plane, material);
+
+  mesh.traverse(child => {
+    child.receiveShadow = true;
+
+    if (child.isMesh){
+      child.material.map.emissive = 0xffffff
+      child.material.map.anisotropy = maxAnisotropy;
+      child.material.map.minFilter = Three.LinearFilter;
+    }
+  })
+
+  mesh.scale.set(.095, .17)
+  mesh.position.set(-3.91, 36.5, -69.95)
+
+  scene.add(mesh);
+
+})
+
+// ! test
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d');
+const text = 'Back'
+
+ctx.font = 'Bold 120px Arial';
+ctx.fillStyle = 'white';
+ctx.fillText(text, 0, 120);
+
+
+const texture = new Three.CanvasTexture(canvas);
+texture.needsUpdate = true;
+
+const material = new Three.MeshBasicMaterial({map: texture});
+const geometry = new Three.PlaneGeometry(10, 7);
+
+const mesh = new Three.Mesh(geometry, material);
+mesh.position.set(-2.5, 32.75, -69.94);
+mesh.scale.set(.1, .1);
+mesh.material.transparent = true
+mesh.name = 'test'
+scene.add(mesh);
+// ! end test
 
 // create a function loadModels, that goes through and loads all of our 3D models
 function loadModels() {
@@ -174,12 +221,13 @@ function loadModels() {
   });
 
   loader.load('skills_letters.glb', function(gltf) {
-    const letters = gltf.scene;
-    letters.position.set(53.75, 60, 15);
-    letters.rotation.set(0, 1.575, 0);
-    letters.scale.set(15, 10, 12);
+    skillLetters = gltf.scene;
+    
+    skillLetters.position.set(53.75, 60, 15);
+    skillLetters.rotation.set(0, 1.575, 0);
+    skillLetters.scale.set(15, 10, 12);
 
-    letters.traverse(child => {
+    skillLetters.traverse(child => {
       child.castShadow = true;
 
       if (child.isMesh){
@@ -187,8 +235,25 @@ function loadModels() {
       };
     });
 
-    scene.add(letters);
+    scene.add(skillLetters);
   });
+
+  loader.load('skills_letters.glb', function(gltf) {
+    skillLetters2 = gltf.scene;
+
+    skillLetters2.position.set(53.75, 60, 15);
+    skillLetters2.rotation.set(0, 1.575, 0);
+    skillLetters2.scale.set(15, 10, 12);
+
+    skillLetters2.traverse(child => {
+      if (child.isMesh) {
+        child.material.color.set('green')
+      }
+    })
+
+    skillLetters2.visible = false;
+    scene.add(skillLetters2)
+  })
 
   loader.load('resume_letters.glb', function(gltf){
     const letters = gltf.scene;
@@ -418,9 +483,7 @@ function animate() {
     panCamera = false;
     clearTimeout(timeout);
     cameraControls.enabled = false;
-    console.log(tControls.scale);
-    console.log(tControls.position);
-    console.log(tControls.rotation);
+    console.log(mesh.position);
   }
   else {
     cameraControls.enabled = true;
@@ -448,7 +511,7 @@ function onDocumentMouseDown(e) {
   const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign], true);
   const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsSign], true);
   const sphereIntersect2 = raycaster.intersectObject(hotPoint2, true);
-  const tavernIntersect = raycaster.intersectObject(tavern, true);
+  const backIntersect = raycaster.intersectObject(mesh, true);
 
   if (noticeBoardIntersect.length) {
       foo(41, 16, 139, 52, 16, 139);
@@ -462,12 +525,10 @@ function onDocumentMouseDown(e) {
     foo(44, 47, -15, 48, 47, -15);
   };
 
-  if (tavernIntersect.length) {
-    const name = tavernIntersect[0].object.name;
-    if (name === "Cartaz_2_cartaz_Espelho_0001"){
-      toggleCamera();
-    };
+  if (backIntersect.length){
+    toggleCamera();
   };
+
 
 };
 
@@ -479,20 +540,17 @@ function onHover(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern || !skillsSign) return;
+  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !skillsSign) return;
   
-  const models = [noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks];
-  
+  const models = [noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, mesh];
 
   let intersects = raycaster.intersectObjects(models, true);
-  const intersect = raycaster.intersectObject(tavern, true);
-  const intersectName = intersect.length && intersect[0].object.name;
 
-  if (intersects.length || intersectName === "Cartaz_2_cartaz_Espelho_0001")
+
+  if (intersects.length)
     document.body.style.cursor = 'pointer';
   else
     document.body.style.cursor = 'default';
-  
 }
 
 function toggleCamera(reset = true) {
