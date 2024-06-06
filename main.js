@@ -10,7 +10,7 @@ CameraControls.install ({THREE: Three})
 
 // initialize animation variables
 let firePlaceMixer, torchMixer;
-let tavern, noticeBoard, resumeSign, pileOfBooks, secondPileOfBooks, timeout;
+let tavern, noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, timeout;
 let panCamera = true;
 
 
@@ -44,8 +44,8 @@ const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
 
 // instantiate GLTFLoader - used to load 3D models - one linked to AWS the other for local files
-// const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
-const loader = new GLTFLoader().setPath('models/');
+const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
+// const loader = new GLTFLoader().setPath('models/');
 
 const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
 // const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
@@ -152,28 +152,62 @@ function loadModels() {
       }
     })
 
-    // tControls.attach(sign)
     scene.add(resumeSign)
   })
 
-    loader.load('resume_letters.glb', function(gltf){
-      const letters = gltf.scene;
-      letters.position.set(54, 40, 145)
-      letters.rotation.set(0, 1.575, 0)
-      letters.scale.set(10, 12, 12)
+  loader.load('skills_sign.glb', function(gltf) {
+    skillsSign = gltf.scene;
+    skillsSign.position.set(53.75, 60.75, 15);
+    skillsSign.rotation.set(0, 1.575, 0);
+    skillsSign.scale.set(15, 10, 12);
 
-      letters.traverse(child => {
-        // child.receiveShadow = true;
-        child.castShadow = true;
+    skillsSign.traverse(child => {
+      child.castShadow = true;
 
-        if (child.isMesh){
-          child.material.side = Three.FrontSide;
-        }
-      })
-
-      scene.add(letters);
-    
+      if (child.isMesh && child.material.map){
+        child.material.side = Three.FrontSide;
+        child.material.map.minFilter = Three.NearestFilter;
+        child.material.map.magFilter = Three.NearestFilter;
+      }
     })
+
+    scene.add(skillsSign);
+  })
+
+  loader.load('skills_letters.glb', function(gltf) {
+    const letters = gltf.scene;
+    letters.position.set(53.75, 60, 15);
+    letters.rotation.set(0, 1.575, 0);
+    letters.scale.set(15, 10, 12);
+
+    letters.traverse(child => {
+      child.castShadow = true;
+
+      if (child.isMesh){
+        child.material.side = Three.FrontSide;
+      }
+    })
+
+    scene.add(letters)
+  })
+
+  loader.load('resume_letters.glb', function(gltf){
+    const letters = gltf.scene;
+    letters.position.set(54, 40, 145)
+    letters.rotation.set(0, 1.575, 0)
+    letters.scale.set(10, 12, 12)
+
+    letters.traverse(child => {
+      // child.receiveShadow = true;
+      child.castShadow = true;
+
+      if (child.isMesh){
+        child.material.side = Three.FrontSide;
+      }
+    })
+
+    scene.add(letters);
+  })
   loader.load('medieval_book_stack.glb', function(gltf) {
     const bookStack = gltf.scene;
     bookStack.scale.set(.33, .33, .33);
@@ -194,7 +228,6 @@ function loadModels() {
     // tControls.attach(bookStack)
     scene.add(bookStack);
   })
-
 
   loader.load('animated_torch_flame1.glb', (gltf) => {
     const fire = gltf.scene
@@ -376,10 +409,6 @@ hotPoint2.position.set(13, 35, -70);
 // tControls.attach(hotPoint2)
 scene.add(hotPoint2);
 
-const hotPoint3 = hotPoint.clone();
-hotPoint3.position.set(48, 53, 10);
-scene.add(hotPoint3);
-
 
 scene.add(loadLights())
 scene.add(tControls);
@@ -424,12 +453,11 @@ function onDocumentMouseDown(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern) return;
+  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern || !skillsSign) return;
  
   const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeSign], true);
-  const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, hotPoint3], true);
+  const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsSign], true);
   const sphereIntersect2 = raycaster.intersectObject(hotPoint2, true);
-  // const sphereIntersect3 = raycaster.intersectObject(hotPoint3, true);
   const tavernIntersect = raycaster.intersectObject(tavern, true);
 
   if (noticeBoardIntersect.length) {
@@ -461,9 +489,9 @@ function onHover(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern) return;
+  if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern || !skillsSign) return;
   
-  const models = [noticeBoard, resumeSign, pileOfBooks, secondPileOfBooks]
+  const models = [noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks]
   
 
   let intersects = raycaster.intersectObjects(models, true);
