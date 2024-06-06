@@ -4,7 +4,7 @@ import CameraControls from 'camera-controls';
 import { Reflector } from 'three/examples/jsm/objects/Reflector';
 import { TransformControls } from 'three/examples/jsm/Addons.js';
 import loadLights from './textures/lights';
-import './style.css'
+import './style.css';
 
 CameraControls.install ({THREE: Three})
 
@@ -55,7 +55,7 @@ const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfoli
 const raycaster = new Three.Raycaster();
 const mouse = new Three.Vector2();
 renderer.domElement.addEventListener('click', onDocumentMouseDown);
-renderer.domElement.addEventListener('mousemove', onHover)
+renderer.domElement.addEventListener('mousemove', onHover);
 
 
 
@@ -74,9 +74,9 @@ cameraControls.addEventListener('control', () => {
     panCamera = false;
     clearTimeout(timeout);
 
-    timeout = setTimeout(toggleCamera, 10000)
+    timeout = setTimeout(toggleCamera, 10000);
     return;
-})
+});
 
 
 
@@ -97,18 +97,17 @@ imageLoader.load('ainsworth_corbin_resume.png', (image) => {
       child.material.map.emissive = 0xffffff;
       child.material.map.anisotropy = maxAnisotropy;
       child.material.map.minFilter = Three.LinearFilter;
-    }
-  })
+    };
+  });
 
   scene.add(mesh);
-})
+});
 
 // create a function loadModels, that goes through and loads all of our 3D models
 function loadModels() {
 
 
   // load the Tavern
-  // loader.load('test.glb', function(gltf) {
   loader.load('updated_tavern.glb', function(gltf) {
     tavern = gltf.scene;
 
@@ -124,7 +123,7 @@ function loadModels() {
           child.material.map.anisotropy = maxAnisotropy;
           child.material.map.minFilter = Three.NearestFilter;
           child.material.map.magFilter = Three.NearestFilter;
-        }
+        };
 
         // filter out all of the lambert1 materials (sconces on the back of tavern)
         // and set them to receive and cast shadows
@@ -136,24 +135,24 @@ function loadModels() {
     });
 
     scene.add(tavern);
-  })
+  });
 
   loader.load('updated_resume_sign.glb', function(gltf) {
-    resumeSign = gltf.scene
-    resumeSign.position.set(54, 40, 145)
-    resumeSign.rotation.set(0, 1.575, 0)
-    resumeSign.scale.set(10, 12, 12)
+    resumeSign = gltf.scene;
+    resumeSign.position.set(54, 40, 145);
+    resumeSign.rotation.set(0, 1.575, 0);
+    resumeSign.scale.set(10, 12, 12);
 
     resumeSign.traverse(child => {
       child.receiveShadow = true;
       child.castShadow = true;
       if (child.mesh) {
         child.material.side = Three.FrontSide;
-      }
-    })
+      };
+    });
 
-    scene.add(resumeSign)
-  })
+    scene.add(resumeSign);
+  });
 
   loader.load('skills_sign.glb', function(gltf) {
     skillsSign = gltf.scene;
@@ -168,11 +167,11 @@ function loadModels() {
         child.material.side = Three.FrontSide;
         child.material.map.minFilter = Three.NearestFilter;
         child.material.map.magFilter = Three.NearestFilter;
-      }
-    })
+      };
+    });
 
     scene.add(skillsSign);
-  })
+  });
 
   loader.load('skills_letters.glb', function(gltf) {
     const letters = gltf.scene;
@@ -185,34 +184,33 @@ function loadModels() {
 
       if (child.isMesh){
         child.material.side = Three.FrontSide;
-      }
-    })
+      };
+    });
 
-    scene.add(letters)
-  })
+    scene.add(letters);
+  });
 
   loader.load('resume_letters.glb', function(gltf){
     const letters = gltf.scene;
-    letters.position.set(54, 40, 145)
-    letters.rotation.set(0, 1.575, 0)
-    letters.scale.set(10, 12, 12)
+    letters.position.set(54, 40, 145);
+    letters.rotation.set(0, 1.575, 0);
+    letters.scale.set(10, 12, 12);
 
     letters.traverse(child => {
-      // child.receiveShadow = true;
       child.castShadow = true;
 
       if (child.isMesh){
         child.material.side = Three.FrontSide;
-      }
-    })
+      };
+    });
 
     scene.add(letters);
-  })
+  });
   loader.load('medieval_book_stack.glb', function(gltf) {
     const bookStack = gltf.scene;
     bookStack.scale.set(.33, .33, .33);
-    bookStack.position.set(22, 23.6, 70)
-    bookStack.rotation.set(0, -2.5, 0)
+    bookStack.position.set(22, 23.6, 70);
+    bookStack.rotation.set(0, -2.5, 0);
 
     bookStack.traverse(child => {
       child.receiveShadow = true;
@@ -222,15 +220,14 @@ function loadModels() {
         child.material.map.anisotropy = maxAnisotropy;
         child.material.map.minFilter = Three.NearestFilter;
         child.material.map.magFilter = Three.NearestFilter;
-      }
-    })
+      };
+    });
 
-    // tControls.attach(bookStack)
     scene.add(bookStack);
-  })
+  });
 
   loader.load('animated_torch_flame1.glb', (gltf) => {
-    const fire = gltf.scene
+    const fire = gltf.scene;
     firePlaceMixer = new Three.AnimationMixer(fire);
     
     // set fire animation
@@ -240,13 +237,8 @@ function loadModels() {
     fire.scale.set(13, 5, 10);
     fire.position.set(-34, 7, -70);
 
-    // fire.traverse(child => {
-    //   child.receiveShadow = true;
-    //   child.castShadow = true;
-    // });
-
     scene.add(fire);
-  })
+  });
 
   loader.load('animated_torch_flame1.glb', (gltf) => {
     
@@ -287,7 +279,7 @@ function loadModels() {
 
     scene.add(torchFlame, torchFlame2, torchFlame3);
     scene.add(sconeFlame, sconeFlame2, sconeFlame3, sconeFlame4);
-  })
+  });
 
   // loader.load('test_board.glb', (gltf) => {
   loader.load('bounty_board_w_resume.glb', (gltf) => {
@@ -302,37 +294,36 @@ function loadModels() {
           child.material.map.anisotropy = maxAnisotropy;
           child.material.map.minFilter = Three.NearestFilter;
           child.material.map.magFilter = Three.NearestFilter;
-        }
+        };
     
-    })
+    });
 
 
-    noticeBoard.scale.set(10, 10, 10)
-    // noticeBoard.position.set(-130, -5, -70)
-    noticeBoard.position.set(52, -5, 150)
-    noticeBoard.rotation.set(0, -1.575, 0)
+    noticeBoard.scale.set(10, 10, 10);
+    noticeBoard.position.set(52, -5, 150);
+    noticeBoard.rotation.set(0, -1.575, 0);
 
     scene.add(noticeBoard);
-  })
+  });
 
   loader.load('lightpost.glb', (gltf) => {
     gltf.scene.scale.set(4.5, 4.5, 4.5);
-    gltf.scene.position.set(-90, -5, 120)
-    gltf.scene.rotation.set(0, 2.5, 0)
+    gltf.scene.position.set(-90, -5, 120);
+    gltf.scene.rotation.set(0, 2.5, 0);
 
     gltf.scene.traverse(child => {
       child.receiveShadow = true;
       child.castShadow = true;
     })
-    scene.add(gltf.scene)
-  })
+    scene.add(gltf.scene);
+  });
 
   loader.load('pile_of_books.glb', (gltf) => {
     pileOfBooks = gltf.scene;
 
     pileOfBooks.scale.set(.15, .15, .15);
     pileOfBooks.rotation.set(-1.6, -1.5, 0);
-    pileOfBooks.position.set(48, 51.75, -14.4)
+    pileOfBooks.position.set(48, 51.75, -14.4);
 
     pileOfBooks.traverse(child => {
       child.receiveShadow = true;
@@ -343,8 +334,8 @@ function loadModels() {
         child.material.map.minFilter = Three.LinearFilter;
         child.material.map.magFilter = Three.LinearFilter;
         child.material.side = Three.FrontSide;
-      }
-    })
+      };
+    });
 
     scene.add(pileOfBooks);
   })
@@ -365,12 +356,12 @@ function loadModels() {
         child.material.map.minFiler = Three.LinearFilter;
         child.material.map.magFilter = Three.LinearFilter;
         child.material.side = Three.FrontSide;
-      }
-    })
+      };
+    });
 
     scene.add(secondPileOfBooks);
-  })
-}
+  });
+};
 
 
 
@@ -379,14 +370,14 @@ const mirrorOptions = {
   // clipBasis: 0.75, // default 0, limits reflection
   // textureWidth: window.innerWidth * window.devicePixelRatio, // default 512, scales by pixel ratio of device
   // textureHeight: window.innerHeight * window.devicePixelRatio, // default 512, scales by pixel ratio of 
-}
+};
 
 const mirrorGeometry = new Three.PlaneGeometry(750, 750);
 const mirror = new Reflector(mirrorGeometry);
 
 mirror.rotation.x = -Math.PI / 2;
 mirror.position.setY(-8);
-scene.add(mirror)
+scene.add(mirror);
 
 
 const floor = new Three.PlaneGeometry(1000, 1000);
@@ -406,11 +397,10 @@ hotPoint.position.set(52, 22, 177);
 
 const hotPoint2 = hotPoint.clone();
 hotPoint2.position.set(13, 35, -70);
-// tControls.attach(hotPoint2)
 scene.add(hotPoint2);
 
 
-scene.add(loadLights())
+scene.add(loadLights());
 scene.add(tControls);
 
 loadModels();
@@ -427,10 +417,10 @@ function animate() {
   if (tControls.dragging){
     panCamera = false;
     clearTimeout(timeout);
-    cameraControls.enabled = false
-    console.log(tControls.scale)
-    console.log(tControls.position)
-    console.log(tControls.rotation)
+    cameraControls.enabled = false;
+    console.log(tControls.scale);
+    console.log(tControls.position);
+    console.log(tControls.rotation);
   }
   else {
     cameraControls.enabled = true;
@@ -461,25 +451,25 @@ function onDocumentMouseDown(e) {
   const tavernIntersect = raycaster.intersectObject(tavern, true);
 
   if (noticeBoardIntersect.length) {
-      foo(41, 16, 139, 52, 16, 139)
-  }
+      foo(41, 16, 139, 52, 16, 139);
+  };
 
   if (sphereIntersect2.length) {
-    foo(-4, 36.5, -64.5, -4, 36.5, -75.5)
-  }
+    foo(-4, 36.5, -64.5, -4, 36.5, -75.5);
+  };
 
   if (pileOfBooksIntersect.length) {
-    foo(44, 47, -15, 48, 47, -15)
-  }
+    foo(44, 47, -15, 48, 47, -15);
+  };
 
   if (tavernIntersect.length) {
     const name = tavernIntersect[0].object.name;
     if (name === "Cartaz_2_cartaz_Espelho_0001"){
       toggleCamera();
-    }
-  }
+    };
+  };
 
-}
+};
 
 function onHover(e) {
   e.preventDefault();
@@ -491,7 +481,7 @@ function onHover(e) {
 
   if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern || !skillsSign) return;
   
-  const models = [noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks]
+  const models = [noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks];
   
 
   let intersects = raycaster.intersectObjects(models, true);
@@ -507,28 +497,28 @@ function onHover(e) {
 
 function toggleCamera(reset = true) {
   clearTimeout(timeout);
+  document.body.style.cursor = 'default';
   cameraControls.enabled = false;
   panCamera = false;
 
   if (reset){
     cameraControls.enabled = true;
-    // cameraControls.setLookAt(-200, 175, 200, 0, 0, 0, true)
     cameraControls.reset(true)
       .then(() => {
         const target = cameraControls.getTarget();
         if (target.x == 0 && target.y == 0 && target.z == 0){
-          panCamera = true
-        }
-      })
-  }
-}
+          panCamera = true;
+        };
+      });
+  };
+};
 
 function foo(x, y, z, tx, ty, tz) {
   const target = cameraControls.getTarget();
-  toggleCamera(false)
+  toggleCamera(false);
   if (target.x == tx && target.y == ty && target.z == tz) 
-    toggleCamera()
+    toggleCamera();
   else
     cameraControls.setLookAt(x, y, z, tx, ty, tz, true);
-}
+};
 
