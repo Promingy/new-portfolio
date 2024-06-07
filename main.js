@@ -5,6 +5,7 @@ import CameraControls from 'camera-controls';
 import loadLights from './textures/lights';
 import * as Three from 'three';
 import './style.css';
+import { exp } from 'three/examples/jsm/nodes/Nodes.js';
 
 CameraControls.install ({THREE: Three})
 
@@ -12,7 +13,7 @@ CameraControls.install ({THREE: Three})
 let firePlaceMixer, torchMixer;
 let tavern, noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, timeout;
 let panCamera = true;
-let skillsText, testMesh, resumeText, aboutText;
+let skillsText, testMesh, resumeText, aboutText, experienceText;
 
 
 // instantiate scene, camera, and renderer
@@ -148,20 +149,24 @@ fontLoader.load('models/Playball_Regular.json', function ( font ) {
 
 // Resume
 fontLoader.load('models/Playball_Regular.json', function ( font ) {
-  const geometry = new TextGeometry( 'Resume', {
+  const geometry = new TextGeometry( 'Résumé', {
     font: font,
     size: 15,
-    depth: 2,
+    depth: 5,
   });
 
   const material = new Three.MeshStandardMaterial({color: 0xffffff});
   resumeText = new Three.Mesh(geometry, material);
   
   // on Floor position and Scale
-  resumeText.position.set(-175, -7, -50);
-  resumeText.rotation.set(-1.575,0,0)
+  // resumeText.position.set(-175, -7, -50);
+  // resumeText.rotation.set(-1.575,0,0);
+
+  // stack positions
+
 
   // on Sign position and scale)
+  resumeText.position.set(-178, 59, -72.5)
 
 
   resumeText.traverse(child => {
@@ -177,15 +182,18 @@ fontLoader.load('models/Playball_Regular.json', function ( font ) {
   const geometry = new TextGeometry( 'Skills', {
     font: font,
     size: 15,
-    depth: 2,
+    depth: 5,
   });
 
   const material = new Three.MeshStandardMaterial({color: 0xffffff});
   skillsText = new Three.Mesh(geometry, material);
 
   //on Sign position and scale
-  skillsText.position.set(-180, -7, -25);
-  skillsText.rotation.set(-1.575,0,0)
+  // skillsText.position.set(-180, -7, -25);
+  // skillsText.rotation.set(-1.575,0,0);
+
+  //stacked positions
+  skillsText.position.set(-183, 37, -72.5)
 
   // on Floor position and scale
   // skillsText.position.set(53.75, 64.25, 0);
@@ -206,13 +214,18 @@ fontLoader.load('models/Playball_Regular.json', (font) => {
   const geometry = new TextGeometry( 'About Me', {
     font: font,
     size: 15,
-    depth: 2,
+    depth: 5,
   });
 
   const material = new Three.MeshStandardMaterial({color: 0xffffff});
   aboutText = new Three.Mesh(geometry, material);
-  aboutText.position.set(-183, -7, 0);
-  aboutText.rotation.set(-1.575,0,0)
+
+  // on Floor position and scale
+  // aboutText.position.set(-183, -7, 0);
+  // aboutText.rotation.set(-1.575,0,0);
+
+  // Stacked Positions
+  aboutText.position.set(-190, -7, -72.5)
 
   aboutText.traverse(child => {
     // child.receiveShadow = true;
@@ -220,6 +233,32 @@ fontLoader.load('models/Playball_Regular.json', (font) => {
   });
   // tControls.attach(aboutText);
   scene.add(aboutText);
+})
+
+// Experience
+fontLoader.load('models/Playball_Regular.json', (font) => {
+  const geometry = new TextGeometry( 'Experience', {
+    font: font,
+    size: 15,
+    depth: 5,
+  });
+
+  const material = new Three.MeshStandardMaterial({color: 0xffffff});
+  experienceText = new Three.Mesh(geometry, material);
+
+  // on Floor position and scale
+  // aboutText.position.set(-183, -7, 0);
+  // aboutText.rotation.set(-1.575,0,0);
+
+  // Stacked Positions
+  experienceText.position.set(-183, 15, -72.5)
+
+  experienceText.traverse(child => {
+    // child.receiveShadow = true;
+    child.castShadow = true;
+  });
+  // tControls.attach(aboutText);
+  scene.add(experienceText);
 })
 
 // ! end test
@@ -592,27 +631,43 @@ function onHover(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  // if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !skillsSign || !testMesh) return;
-  // const models = [noticeBoard, resumeSign, skillsSign, pileOfBooks, secondPileOfBooks, skillsText, testMesh, resumeText];
+  if (!noticeBoard || !pileOfBooks || !secondPileOfBooks || !testMesh) return;
 
-  // if (!noticeBoard || !pileOfBooks || !secondPileOfBooks || !testMesh) return;
-  const models = [noticeBoard, pileOfBooks, secondPileOfBooks, testMesh, resumeText, skillsText, aboutText];
+  const models = [noticeBoard, pileOfBooks, secondPileOfBooks];
+  const textModels = [resumeText, skillsText, aboutText, experienceText, testMesh];
 
   let intersects = raycaster.intersectObjects(models, true);
+  let textIntersects = raycaster.intersectObjects(textModels, true);
 
-  if (intersects.length){
-    let object = intersects[0].object;
-    document.body.style.cursor = 'pointer'
-    if (object == testMesh) testMesh.material.color.set('red');
-    else if (object == skillsText) skillsText.material.color.set('red');
-    else if (object == resumeText) resumeText.material.color.set('red');
-    else if (intersects[0].object == aboutText) aboutText.material.color.set('red');
-  }else {
+  if (intersects.length || textIntersects.length)
+    document.body.style.cursor = 'pointer';
+  else 
     document.body.style.cursor = 'default';
-    if (testMesh.color != 0xffffff) testMesh.material.color.set(0xffffff);
-    if (skillsText.color != 0xffffff) skillsText.material.color.set(0xffffff);
-    if (resumeText.color != 0xffffff) resumeText.material.color.set(0xffffff);
-    if (aboutText.color != 0xffffff) aboutText.material.color.set(0xffffff);
+
+  if (textIntersects.length){
+    let object = textIntersects[0].object;
+    let variable;
+
+    switch(object) {
+      case skillsText:
+      case resumeText:
+      case aboutText:
+      case experienceText:
+      case testMesh: {
+        variable = object;
+        break;
+      }
+      default:{
+        color = 0xffffff;
+      }
+    }
+  
+  setColor(variable, 'red')
+}
+  else {
+    textModels.forEach(model => {
+      if (model.color != 0xffffff) setColor(model)
+    });   
   }
 }
 
@@ -642,4 +697,8 @@ function foo(x, y, z, tx, ty, tz) {
   else
     cameraControls.setLookAt(x, y, z, tx, ty, tz, true);
 };
+
+function setColor(object, color=0xffffff) {
+  object.material.color.set(color);
+}
 
