@@ -47,10 +47,8 @@ const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
 // instantiate GLTFLoader - used to load 3D models - one linked to AWS the other for local files
 const loader = new GLTFLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
-// const loader = new GLTFLoader().setPath('models/');
 
 const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3-accelerate.amazonaws.com/');
-// const imageLoader = new Three.ImageLoader().setPath('https://glb-bucket-portfolio.s3.us-east-2.amazonaws.com/');
 
 
 // instantiate raycaster and mouse - to detect user clicks and move the camera to hotpoints
@@ -594,7 +592,6 @@ function onDocumentMouseDown(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  // if (!noticeBoard || !resumeSign || !pileOfBooks || !secondPileOfBooks || !tavern || !skillsSign) return;
  
   const noticeBoardIntersect = raycaster.intersectObjects([noticeBoard, resumeText], true);
   const pileOfBooksIntersect = raycaster.intersectObjects([pileOfBooks, secondPileOfBooks, skillsText], true);
@@ -631,11 +628,10 @@ function onHover(e) {
 
   raycaster.setFromCamera(mouse, camera);
 
-  if (!noticeBoard || !pileOfBooks || !secondPileOfBooks || !testMesh) return;
-
+  
   const models = [noticeBoard, pileOfBooks, secondPileOfBooks];
   const textModels = [resumeText, skillsText, aboutText, experienceText, testMesh];
-
+  
   let intersects = raycaster.intersectObjects(models, true);
   let textIntersects = raycaster.intersectObjects(textModels, true);
 
